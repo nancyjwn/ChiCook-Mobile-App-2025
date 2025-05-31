@@ -1,6 +1,7 @@
 package com.example.chicook.data;
 
 import com.example.chicook.model.MealResponse;
+import com.example.chicook.model.category.CategoryResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -12,5 +13,8 @@ public interface ApiService {
 
     @GET("filter.php")
     Call<MealResponse> searchMealsByArea(@Query("a") String area);
+
+    @GET("categories.php")
+    Call<CategoryResponse> categoryMeals(@Query("") String categoryName);
 }
 

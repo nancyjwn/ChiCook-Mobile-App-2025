@@ -12,7 +12,7 @@ import java.util.List;
 
 public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder> {
 
-    private List<Meal> meals;
+    private List<Meal> meals;  // Hanya untuk menyimpan makanan
 
     public MealAdapter(List<Meal> meals) {
         this.meals = meals;
@@ -20,29 +20,27 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
 
     @Override
     public MealViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // Inflate layout dengan ViewBinding
-        ResepItemBinding binding = ResepItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-        return new MealViewHolder(binding);
+        // Inflate layout untuk makanan menggunakan ViewBinding
+        ResepItemBinding resepBinding = ResepItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+        return new MealViewHolder(resepBinding);
     }
 
     @Override
     public void onBindViewHolder(MealViewHolder holder, int position) {
         Meal meal = meals.get(position);
+        // Bind data makanan ke dalam UI
         holder.binding.recipeTitle.setText(meal.getMealName());
         holder.binding.recipeCategory.setText(meal.getCategory());
         holder.binding.recipeArea.setText(meal.getArea());
-
-        // Gunakan Picasso untuk menampilkan gambar dari URL
-        Picasso.get().load(meal.getMealThumb()).into(holder.binding.recipeImage);
+        Picasso.get().load(meal.getMealThumb()).into(holder.binding.recipeImage);  // Menampilkan gambar makanan
     }
 
     @Override
     public int getItemCount() {
-        return meals.size();
+        return meals.size();  // Mengembalikan jumlah makanan
     }
 
     public static class MealViewHolder extends RecyclerView.ViewHolder {
-        // Gunakan binding untuk akses view
         private ResepItemBinding binding;
 
         public MealViewHolder(ResepItemBinding binding) {
