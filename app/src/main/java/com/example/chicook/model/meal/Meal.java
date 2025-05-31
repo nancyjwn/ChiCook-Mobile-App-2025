@@ -1,4 +1,4 @@
-package com.example.chicook.model;
+package com.example.chicook.model.meal;
 
 import com.google.gson.annotations.SerializedName;
 
