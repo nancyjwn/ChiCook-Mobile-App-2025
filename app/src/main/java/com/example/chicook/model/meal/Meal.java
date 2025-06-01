@@ -293,4 +293,14 @@ public class Meal {
     public void setMeasure9(String measure9) {
         this.measure9 = measure9;
     }
+
+    // Method to return ingredients as an array
+    public String[] getIngredients() {
+        return new String[]{ingredient1, ingredient2, ingredient3, ingredient4, ingredient5, ingredient6, ingredient7, ingredient8, ingredient9};
+    }
+
+    // Method to return measures as an array
+    public String[] getMeasures() {
+        return new String[]{measure1, measure2, measure3, measure4, measure5, measure6, measure7, measure8, measure9};
+    }
 }

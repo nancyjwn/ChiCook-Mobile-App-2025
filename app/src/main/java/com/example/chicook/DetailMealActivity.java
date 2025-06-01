@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.chicook.data.ApiConfig;
 import com.example.chicook.data.ApiService;
 import com.example.chicook.databinding.DetailResepBinding;
+import com.example.chicook.model.meal.Meal;
 import com.example.chicook.model.meal.MealResponse;
 import com.squareup.picasso.Picasso;
 
@@ -39,28 +40,10 @@ public class DetailMealActivity extends AppCompatActivity {
 
         // Menampilkan data pada elemen UI
         binding.recipeTitle.setText(title);
+        binding.recipeCategory.setText(category);
+        binding.recipeArea.setText(area);
         binding.recipeInstructions.setText(instructions);
-
-        // Menampilkan kategori hanya jika tidak kosong
-        if (category != null && !category.isEmpty()) {
-            binding.recipeCategory.setText(category);
-        } else {
-            binding.recipeCategory.setVisibility(View.GONE);  // Menyembunyikan kategori jika kosong
-        }
-
-        // Menampilkan area hanya jika tidak kosong
-        if (area != null && !area.isEmpty()) {
-            binding.recipeArea.setText(area);
-        } else {
-            binding.recipeArea.setVisibility(View.GONE);  // Menyembunyikan area jika kosong
-        }
-
-        // Menampilkan gambar menggunakan Picasso
-        if (imageUrl != null && !imageUrl.isEmpty()) {
-            Picasso.get().load(imageUrl).into(binding.recipeImage);
-        } else {
-            binding.recipeImage.setVisibility(View.GONE);  // Menyembunyikan gambar jika URL kosong
-        }
+        Picasso.get().load(imageUrl).into(binding.recipeImage);
 
         // Panggil API untuk mendapatkan detail resep berdasarkan mealId
         fetchMealDetail(mealId);
@@ -78,7 +61,30 @@ public class DetailMealActivity extends AppCompatActivity {
                     // Update UI dengan data tambahan yang didapat dari API
                     String additionalInstructions = response.body().getMeals().get(0).getInstructions();
                     binding.recipeInstructions.setText(additionalInstructions);  // Update dengan instruksi lebih lengkap
+                    binding.recipeArea.setText(response.body().getMeals().get(0).getArea());  // Update area
+                    binding.recipeCategory.setText(response.body().getMeals().get(0).getCategory());  // Update kategori
                     Picasso.get().load(response.body().getMeals().get(0).getMealThumb()).into(binding.recipeImage);  // Update gambar
+
+                    // Ambil meal data dari respons
+                    Meal meal = response.body().getMeals().get(0);
+
+                    // Dapatkan ingredients dan measures
+                    String[] ingredients = meal.getIngredients();
+                    String[] measures = meal.getMeasures();
+
+                    // Gabungkan ingredients dan measures menjadi satu string
+                    StringBuilder ingredientsText = new StringBuilder();
+                    for (int i = 0; i < ingredients.length; i++) {
+                        if (ingredients[i] != null && !ingredients[i].isEmpty()) {
+                            ingredientsText.append(ingredients[i])
+                                    .append(": ")
+                                    .append(measures[i])
+                                    .append("\n");
+                        }
+                    }
+
+                    // Tampilkan ingredients dan measures pada UI
+                    binding.recipeIngredients.setText(ingredientsText.toString());
                 }
             }
 

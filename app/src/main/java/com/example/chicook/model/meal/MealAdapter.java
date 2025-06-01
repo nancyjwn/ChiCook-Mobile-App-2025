@@ -68,6 +68,9 @@ public class MealAdapter extends RecyclerView.Adapter<MealAdapter.MealViewHolder
             intent.putExtra("area", meal.getArea());
             intent.putExtra("thumb", meal.getMealThumb());
             intent.putExtra("instructions", meal.getInstructions());
+            intent.putExtra("linkYoutube", meal.getYoutubeLink());
+            intent.putExtra("ingredients", meal.getIngredients());  // Mengirimkan daftar ingredients
+            intent.putExtra("measures", meal.getMeasures());  // Mengirimkan daftar measures
             context.startActivity(intent);
         });
     }

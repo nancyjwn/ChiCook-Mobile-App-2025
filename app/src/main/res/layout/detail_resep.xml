@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
@@ -7,7 +8,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        tools:ignore="WebViewLayout">
 
         <ImageView
             android:id="@+id/recipeImage"
@@ -41,12 +43,20 @@
             android:textSize="16sp"
             android:layout_marginBottom="8dp"/>
 
+        <!-- Ingredients -->
+        <TextView
+            android:id="@+id/recipeIngredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Ingredients: "
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"/>
+
         <TextView
             android:id="@+id/recipeInstructions"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Instructions: "
             android:textSize="16sp"/>
-
     </LinearLayout>
 </ScrollView>
