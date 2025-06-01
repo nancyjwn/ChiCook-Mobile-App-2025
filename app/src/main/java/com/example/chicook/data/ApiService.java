@@ -19,6 +19,11 @@ public interface ApiService {
     Call<CategoryResponse> categoryMeals(@Query("") String categoryName);
 
     @GET("random.php")
-    Call<RandomMealResponse> randomMeals(@Query("") String randomMeal);  // Mengembalikan satu meal acak
-}
+    Call<RandomMealResponse> randomMeals(@Query("") String randomMeal);
 
+    @GET("filter.php")
+    Call<MealResponse> searchMealsByCategory(@Query("c") String category);
+
+    @GET("lookup.php")
+    Call<MealResponse> getMealDetailById(@Query("i") String mealId);
+}

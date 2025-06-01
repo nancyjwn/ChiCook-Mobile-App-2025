@@ -68,7 +68,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void run() {
                 fetchRandomMeals(apiService); // Memanggil fungsi fetchRandomMeal
-                handler.postDelayed(this, 3000); // Mengulang setiap 3 detik
+                handler.postDelayed(this, 5000); // Mengulang setiap 3 detik
             }
         }, 3000);  // Mulai setelah 3 detik pertama
 
@@ -92,12 +92,12 @@ public class HomeFragment extends Fragment {
                     randomMealsList.add(meal);  // Menambahkan meal ke dalam list
 
                     // Menampilkan meal berikutnya setiap 3 detik
-                    if (randomMealsList.size() > 3) {
+                    if (randomMealsList.size() > 5) {
                         randomMealsList.remove(0);  // Hapus meal pertama agar hanya menampilkan 3 meal terakhir
                     }
 
                     // Update adapter dan tampilkan resep acak
-                    randomMealAdapter = new RandomMealAdapter(randomMealsList);
+                    randomMealAdapter = new RandomMealAdapter(randomMealsList, getContext());
                     binding.carouselRecycler.setAdapter(randomMealAdapter);
                 } else {
                     Toast.makeText(getContext(), "No meals found", Toast.LENGTH_SHORT).show();
@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {
                     }
 
                     // Menampilkan kategori yang telah difilter
-                    categoryAdapter = new CategoryAdapter(filteredCategories);  // panggil filter
+                    categoryAdapter = new CategoryAdapter(filteredCategories, getContext());  // panggil filter
                     binding.topCategoryRecycler.setAdapter(categoryAdapter);  // Menampilkan kategori
                 } else {
                     Toast.makeText(getContext(), "No categories found", Toast.LENGTH_SHORT).show();
@@ -150,7 +150,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    mealAdapter = new MealAdapter(response.body().getMeals());  // Menggunakan adapter untuk makanan
+                    mealAdapter = new MealAdapter(response.body().getMeals(), getContext());  // Menggunakan adapter untuk makanan
                     binding.recommendationRecycler.setAdapter(mealAdapter);  // Menampilkan makanan
                 } else {
                     Toast.makeText(getContext(), "No meals found", Toast.LENGTH_SHORT).show();

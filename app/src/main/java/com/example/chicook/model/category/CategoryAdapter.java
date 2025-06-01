@@ -1,10 +1,13 @@
 package com.example.chicook.model.category;
 
+import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.chicook.CategoryMealsActivity;
 import com.example.chicook.databinding.CategoryItemBinding;  // ViewBinding untuk kategori
 import com.squareup.picasso.Picasso;
 
@@ -14,9 +17,11 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
     private List<Category> categories;
+    private Context context;
 
-    public CategoryAdapter(List<Category> categories) {
+    public CategoryAdapter(List<Category> categories, Context context) {
         this.categories = categories;
+        this.context = context;
     }
 
     @Override
@@ -33,6 +38,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         // Bind data kategori ke dalam UI
         holder.binding.categoryName.setText(category.getStrCategory());
         Picasso.get().load(category.getStrCategoryThumb()).into(holder.binding.categoryImage);  // Menampilkan gambar kategori
+
+        // Menambahkan click listener untuk item kategori
+        holder.itemView.setOnClickListener(v -> {
+            Intent intent = new Intent(context, CategoryMealsActivity.class);
+            intent.putExtra("category", category.getStrCategory());  // Mengirim kategori yang dipilih
+            context.startActivity(intent);  // Menjalankan CategoryMealsActivity
+        });
     }
 
     @Override
@@ -49,4 +61,3 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         }
     }
 }
-

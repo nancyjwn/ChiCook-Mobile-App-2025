@@ -294,4 +294,3 @@ public class Meal {
         this.measure9 = measure9;
     }
 }
-

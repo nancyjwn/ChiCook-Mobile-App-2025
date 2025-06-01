@@ -35,6 +35,7 @@
             android:layout_height="wrap_content" >
 
             <ImageView
+                android:id="@+id/recipeCategoryIcon"
                 android:layout_width="35px"
                 android:layout_height="35px"
                 android:layout_marginTop="2dp"
@@ -54,6 +55,7 @@
                 android:textSize="12sp" />
 
             <ImageView
+                android:id="@+id/recipeAreaIcon"
                 android:layout_width="37px"
                 android:layout_height="37px"
                 android:layout_marginTop="2dp"
