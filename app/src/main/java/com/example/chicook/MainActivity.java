@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.add_book) {
                 selectedFragment = new SearchFragment();
             } else if (id == R.id.favorites) {
-                selectedFragment = new FavoritesFragment();
+                selectedFragment = new BookmarkFragment();
             } else if (id == R.id.community) {
                 selectedFragment = new CommunityFragment();
             }
