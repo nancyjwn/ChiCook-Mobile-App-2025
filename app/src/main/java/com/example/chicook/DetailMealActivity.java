@@ -49,6 +49,8 @@ public class DetailMealActivity extends AppCompatActivity {
 
         // Panggil API untuk mendapatkan detail resep berdasarkan mealId
         fetchMealDetail(mealId);
+
+        binding.backButton.setOnClickListener(v -> onBackPressed());
     }
 
     private void fetchMealDetail(String mealId) {

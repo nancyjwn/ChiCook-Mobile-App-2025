@@ -1,14 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SearchFragment">
+<!-- Kategori Filter -->
+<HorizontalScrollView android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginTop="10dp"
+    android:scrollbars="none"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <LinearLayout
+        android:id="@+id/genre_buttons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
 
-</FrameLayout>
+        <!-- Contoh tombol kategori -->
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#FFFFFF"
+            android:text="Semua"
+            android:textColor="#204C3B"
+            app:cornerRadius="16dp"
+            app:strokeColor="#204C3B"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#FFFFFF"
+            android:text="Ayam"
+            android:textColor="#204C3B"
+            app:cornerRadius="16dp"
+            app:strokeColor="#204C3B"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#FFFFFF"
+            android:text="Daging"
+            android:textColor="#204C3B"
+            app:cornerRadius="16dp"
+            app:strokeColor="#204C3B"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#FFFFFF"
+            android:text="Bubur"
+            android:textColor="#204C3B"
+            app:cornerRadius="16dp"
+            app:strokeColor="#204C3B"
+            app:strokeWidth="1dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:backgroundTint="#FFFFFF"
+            android:text="Nasi"
+            android:textColor="#204C3B"
+            app:cornerRadius="16dp"
+            app:strokeColor="#204C3B"
+            app:strokeWidth="1dp" />
+
+        <!-- Tambahkan kategori lain sesuai kebutuhan -->
+    </LinearLayout>
+</HorizontalScrollView>

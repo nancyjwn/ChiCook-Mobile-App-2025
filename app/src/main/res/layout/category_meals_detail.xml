@@ -3,28 +3,121 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:backgroundTint="#ECECEC"
+    android:background="#F8F9FA">
 
+    <!-- Header Card with Back Button -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/headerCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="8dp"
+        android:backgroundTint="@color/white">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:gravity="center_vertical">
+
+            <!-- Back Button -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                app:cardCornerRadius="20dp"
+                app:cardElevation="4dp"
+                android:backgroundTint="#F0F0F0"
+                android:layout_marginRight="16dp">
+
+                <ImageButton
+                    android:id="@+id/backButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/back"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:scaleType="centerInside"
+                    android:padding="8dp"
+                    android:contentDescription="Back" />
+
+            </androidx.cardview.widget.CardView>
+
+            <!-- Category Title with Enhanced Style -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Category"
+                    android:textSize="12sp"
+                    android:textColor="#7F8C8D"
+                    android:textStyle="normal"
+                    android:layout_marginBottom="2dp"/>
+
+                <TextView
+                    android:id="@+id/categoryMealsName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Category Name"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="#2C3E50"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Main Content Container -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:layout_below="@id/headerCard"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <TextView
-            android:id="@+id/categoryMealsName"
-            android:layout_width="wrap_content"
+        <!-- Subtitle Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Category Name"
-            android:textSize="30sp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <View
+                android:layout_width="4dp"
+                android:layout_height="24dp"
+                android:background="#204C3B"
+                android:layout_marginRight="12dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Explore Delicious Recipes"
+                android:textSize="16sp"
+                android:textColor="#34495E"
+                android:textStyle="normal"/>
+
+        </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoryMealsRecycler"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="45dp"
+            android:layout_height="match_parent"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp"
+            android:clipToPadding="false"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="2"
             tools:listitem="@layout/resep_item" />
-
     </LinearLayout>
 </RelativeLayout>

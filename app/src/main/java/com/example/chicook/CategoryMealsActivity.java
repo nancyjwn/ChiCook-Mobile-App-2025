@@ -42,6 +42,9 @@ public class CategoryMealsActivity extends AppCompatActivity {
 
         // Fetch meals by category from the API
         fetchMealsByCategory(apiService, category);
+
+        // Handle the back button click
+        binding.backButton.setOnClickListener(v -> onBackPressed());
     }
 
     // Function to fetch meals based on selected category
