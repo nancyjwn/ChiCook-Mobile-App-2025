@@ -36,6 +36,7 @@ public class DetailMealActivity extends AppCompatActivity {
         String category = intent.getStringExtra("category");
         String area = intent.getStringExtra("area");
         String instructions = intent.getStringExtra("instructions");
+        String ingridients = intent.getStringExtra("ingredients");
         String imageUrl = intent.getStringExtra("thumb");
 
         // Menampilkan data pada elemen UI
@@ -43,6 +44,7 @@ public class DetailMealActivity extends AppCompatActivity {
         binding.recipeCategory.setText(category);
         binding.recipeArea.setText(area);
         binding.recipeInstructions.setText(instructions);
+        binding.recipeIngredients.setText(ingridients);
         Picasso.get().load(imageUrl).into(binding.recipeImage);
 
         // Panggil API untuk mendapatkan detail resep berdasarkan mealId

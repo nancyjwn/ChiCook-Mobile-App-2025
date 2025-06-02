@@ -45,6 +45,8 @@ public class RandomMealAdapter extends RecyclerView.Adapter<RandomMealAdapter.Ra
             intent.putExtra("area", meal.getStrArea());
             intent.putExtra("thumb", meal.getStrMealThumb());
             intent.putExtra("instructions", meal.getStrInstructions());
+            intent.putExtra("mealId", meal.getIdMeal());
+            intent.putExtra("ingredients", meal.getStrIngredients());  // Mengirimkan daftar bahan
             context.startActivity(intent);  // Memulai DetailMealActivity
         });
     }
