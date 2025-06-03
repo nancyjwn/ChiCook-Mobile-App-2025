@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -16,8 +15,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.example.chicook.data.ApiConfig;
-import com.example.chicook.data.ApiService;
+import com.example.chicook.data.api.ApiConfig;
+import com.example.chicook.data.api.ApiService;
 import com.example.chicook.data.sqlite.DatabaseHelper;
 import com.example.chicook.databinding.DetailResepBinding;
 import com.example.chicook.model.meal.Meal;
@@ -93,6 +92,12 @@ public class DetailMealActivity extends AppCompatActivity {
                 Toast.makeText(this, "Bookmark removed", Toast.LENGTH_SHORT).show();
                 isBookmarked = false;
             }
+
+            // Kirimkan hasil ke BookmarkFragment
+            Intent resultIntent = new Intent();
+            resultIntent.putExtra("status", isBookmarked ? "added" : "removed");
+            setResult(RESULT_OK, resultIntent);  // Kirim hasil kembali ke BookmarkFragment
+
         });
 
         // Panggil API untuk mendapatkan detail resep berdasarkan mealId

@@ -7,8 +7,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 
-import com.example.chicook.data.ApiConfig;
-import com.example.chicook.data.ApiService;
+import com.example.chicook.data.api.ApiConfig;
+import com.example.chicook.data.api.ApiService;
 import com.example.chicook.databinding.CategoryMealsDetailBinding;
 import com.example.chicook.model.meal.MealAdapter;
 import com.example.chicook.model.meal.MealResponse;

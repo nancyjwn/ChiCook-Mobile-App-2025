@@ -1,5 +1,8 @@
 package com.example.chicook;
 
+import static android.app.Activity.RESULT_OK;
+
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -8,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;  // Gunakan GridLayoutManager untuk grid
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +26,8 @@ public class BookmarkFragment extends Fragment {
     private BookmarkAdapter adapter;
     private DatabaseHelper databaseHelper;
     private FragmentBookmarkBinding binding;
+    public static final int REQUEST_CODE = 1;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -46,10 +52,24 @@ public class BookmarkFragment extends Fragment {
         return binding.getRoot();
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            String status = data.getStringExtra("status");
+            if ("added".equals(status) || "removed".equals(status)) {
+                // Setelah menerima hasil, perbarui data di BookmarkFragment
+                refreshData();  // Ini akan memperbarui RecyclerView di BookmarkFragment
+            }
+        }
+    }
+
     // Menambahkan method untuk memperbarui adapter setelah data disimpan
     public void refreshData() {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor cursor = db.query("bookmarks", null, null, null, null, null, null);
-        adapter.swapCursor(cursor);  // Mengganti cursor di adapter
+        Cursor cursor = db.query("bookmarks", null, null, null, null, null, null);  // Query ulang data dari database
+        adapter.swapCursor(cursor);  // Perbarui RecyclerView dengan data terbaru
     }
+
+
 }

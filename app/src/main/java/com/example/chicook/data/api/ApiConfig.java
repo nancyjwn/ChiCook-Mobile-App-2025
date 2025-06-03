@@ -1,4 +1,4 @@
-package com.example.chicook.data;
+package com.example.chicook.data.api;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;

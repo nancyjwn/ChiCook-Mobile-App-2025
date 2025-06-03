@@ -1,4 +1,4 @@
-package com.example.chicook.data;
+package com.example.chicook.data.api;
 
 import com.example.chicook.model.meal.MealResponse;
 import com.example.chicook.model.category.CategoryResponse;
