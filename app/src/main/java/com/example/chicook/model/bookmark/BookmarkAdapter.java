@@ -19,6 +19,7 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
 
     private Context context;
     private Cursor cursor;
+    private OnBookmarkClickListener listener;
 
     public BookmarkAdapter(Context context, Cursor cursor) {
         this.context = context;
@@ -33,6 +34,14 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
         return new BookmarkViewHolder(binding);
     }
 
+    public interface OnBookmarkClickListener {
+        void onBookmarkClick(Intent intent);
+    }
+
+    public void setOnBookmarkClickListener(OnBookmarkClickListener listener) {
+        this.listener = listener;
+    }
+
     @Override
     public void onBindViewHolder(@NonNull BookmarkViewHolder holder, int position) {
         if (cursor.moveToPosition(position)) {
@@ -44,6 +53,25 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
             @SuppressLint("Range") String area = cursor.getString(cursor.getColumnIndex("area"));
             @SuppressLint("Range") String instructions = cursor.getString(cursor.getColumnIndex("instructions"));
             @SuppressLint("Range") String ingredients = cursor.getString(cursor.getColumnIndex("ingredients"));
+
+            // Menangani kategori dan area kosong atau null
+            if (category == null || category.isEmpty()) {
+                holder.binding.recipeCategory.setVisibility(View.GONE);  // Sembunyikan kategori
+                holder.binding.recipeCategoryIcon.setVisibility(View.GONE);  // Sembunyikan ikon kategori
+            } else {
+                holder.binding.recipeCategory.setVisibility(View.VISIBLE);  // Tampilkan kategori
+                holder.binding.recipeCategoryIcon.setVisibility(View.VISIBLE);  // Tampilkan ikon kategori
+                holder.binding.recipeCategory.setText(category);  // Menampilkan kategori
+            }
+
+            if (area == null || area.isEmpty()) {
+                holder.binding.recipeArea.setVisibility(View.GONE);  // Sembunyikan area
+                holder.binding.recipeAreaIcon.setVisibility(View.GONE);  // Sembunyikan ikon area
+            } else {
+                holder.binding.recipeArea.setVisibility(View.VISIBLE);  // Tampilkan area
+                holder.binding.recipeAreaIcon.setVisibility(View.VISIBLE);  // Tampilkan ikon area
+                holder.binding.recipeArea.setText(area);  // Menampilkan area
+            }
 
             // Set data ke views menggunakan binding
             holder.binding.recipeTitle.setText(title);
@@ -62,7 +90,9 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
                 intent.putExtra("instructions", instructions);
                 intent.putExtra("ingredients", ingredients);
                 intent.putExtra("thumb", imageUrl);
-                context.startActivity(intent);
+                if (listener != null) {
+                    listener.onBookmarkClick(intent);
+                }
             });
         }
     }

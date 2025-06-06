@@ -44,6 +44,10 @@ public class BookmarkFragment extends Fragment {
 
         // Menghubungkan cursor dengan adapter
         adapter = new BookmarkAdapter(getContext(), cursor);
+        // Tambahkan baris ini agar klik item berfungsi
+        adapter.setOnBookmarkClickListener(intent -> {
+            startActivityForResult(intent, REQUEST_CODE);
+        });
 
         // Menggunakan GridLayoutManager untuk menampilkan data dalam 2 kolom
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));  // Grid 2 kolom
@@ -67,9 +71,7 @@ public class BookmarkFragment extends Fragment {
     // Menambahkan method untuk memperbarui adapter setelah data disimpan
     public void refreshData() {
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor cursor = db.query("bookmarks", null, null, null, null, null, null);  // Query ulang data dari database
-        adapter.swapCursor(cursor);  // Perbarui RecyclerView dengan data terbaru
+        Cursor cursor = db.query("bookmarks", null, null, null, null, null, null);
+        adapter.swapCursor(cursor);
     }
-
-
 }
