@@ -1,74 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Kategori Filter -->
-<HorizontalScrollView android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_marginTop="10dp"
-    android:scrollbars="none"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SearchFragment">
 
-    <LinearLayout
-        android:id="@+id/genre_buttons"
-        android:layout_width="wrap_content"
+    <!-- Search View -->
+    <androidx.appcompat.widget.SearchView
+        android:id="@+id/search"
+        android:layout_width="380dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_marginTop="20dp"
+        android:paddingStart="20dp"
+        android:paddingEnd="8dp"
+        android:layout_gravity="center"/>
 
-        <!-- Contoh tombol kategori -->
-        <com.google.android.material.button.MaterialButton
+    <!-- Category Filter -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@id/search">
+
+        <LinearLayout
+            android:id="@+id/genre_buttons"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="#FFFFFF"
-            android:text="Semua"
-            android:textColor="#204C3B"
-            app:cornerRadius="16dp"
-            app:strokeColor="#204C3B"
-            app:strokeWidth="1dp" />
+            android:orientation="horizontal"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp">
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="#FFFFFF"
-            android:text="Ayam"
-            android:textColor="#204C3B"
-            app:cornerRadius="16dp"
-            app:strokeColor="#204C3B"
-            app:strokeWidth="1dp" />
+            <!-- Category buttons (example categories) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_chicken"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="Chicken"
+                android:textColor="#204C3B"
+                app:cornerRadius="16dp"
+                app:strokeColor="#204C3B"
+                app:strokeWidth="1dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="#FFFFFF"
-            android:text="Daging"
-            android:textColor="#204C3B"
-            app:cornerRadius="16dp"
-            app:strokeColor="#204C3B"
-            app:strokeWidth="1dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_beef"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="Beef"
+                android:textColor="#204C3B"
+                app:cornerRadius="16dp"
+                app:strokeColor="#204C3B"
+                app:strokeWidth="1dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="#FFFFFF"
-            android:text="Bubur"
-            android:textColor="#204C3B"
-            app:cornerRadius="16dp"
-            app:strokeColor="#204C3B"
-            app:strokeWidth="1dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_seafood"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="Seafood"
+                android:textColor="#204C3B"
+                app:cornerRadius="16dp"
+                app:strokeColor="#204C3B"
+                app:strokeWidth="1dp" />
 
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="#FFFFFF"
-            android:text="Nasi"
-            android:textColor="#204C3B"
-            app:cornerRadius="16dp"
-            app:strokeColor="#204C3B"
-            app:strokeWidth="1dp" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/button_pork"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="12dp"
+                android:backgroundTint="#FFFFFF"
+                android:text="Pork"
+                android:textColor="#204C3B"
+                app:cornerRadius="16dp"
+                app:strokeColor="#204C3B"
+                app:strokeWidth="1dp" />
 
-        <!-- Tambahkan kategori lain sesuai kebutuhan -->
-    </LinearLayout>
-</HorizontalScrollView>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- RecyclerView for Random Meals -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/randomSearchRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="630dp"
+        android:layout_marginBottom="5dp"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:spanCount="2"
+        tools:listitem="@layout/carousel_item" />
+
+    <!-- RecyclerView for Search Results -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="16dp"
+        android:paddingBottom="45dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:spanCount="2"
+        tools:listitem="@layout/resep_item" />
+
+</LinearLayout>

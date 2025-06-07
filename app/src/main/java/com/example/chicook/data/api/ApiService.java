@@ -26,4 +26,10 @@ public interface ApiService {
 
     @GET("lookup.php")
     Call<MealResponse> getMealDetailById(@Query("i") String mealId);
+
+    @GET("filter.php")
+    Call<MealResponse> searchMealsByIngredient(@Query("i") String ingredient);
+
+    @GET("search.php")
+    Call<MealResponse> searchMealsByFirstLetter(@Query("f") String firstLetter);
 }
