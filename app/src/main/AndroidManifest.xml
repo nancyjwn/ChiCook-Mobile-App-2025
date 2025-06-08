@@ -25,11 +25,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".DetailMealActivity"
             android:exported="true" />
 
         <activity android:name=".CategoryMealsActivity"
+            android:exported="true" />
+
+        <activity android:name=".FormActivity"
             android:exported="true" />
     </application>
 

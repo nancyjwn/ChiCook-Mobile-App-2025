@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.chicook.DetailMealActivity;
+import com.example.chicook.data.sqlite.BookmarkHelper;
 import com.example.chicook.databinding.ResepItemBinding; // Gunakan ResepItemBinding untuk item
 import com.squareup.picasso.Picasso;
 
@@ -19,11 +20,13 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
 
     private Context context;
     private Cursor cursor;
+    private BookmarkHelper bookmarkHelper;
     private OnBookmarkClickListener listener;
 
     public BookmarkAdapter(Context context, Cursor cursor) {
         this.context = context;
         this.cursor = cursor;
+        this.bookmarkHelper = new BookmarkHelper(context); // Inisialisasi BookmarkHelper
     }
 
     @NonNull

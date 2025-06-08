@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.chicook.data.sqlite.BookmarkHelper;
 import com.example.chicook.data.sqlite.DatabaseHelper;
 import com.example.chicook.databinding.FragmentBookmarkBinding;
 import com.example.chicook.model.bookmark.BookmarkAdapter;
@@ -24,7 +25,7 @@ public class BookmarkFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private BookmarkAdapter adapter;
-    private DatabaseHelper databaseHelper;
+    private BookmarkHelper bookmarkHelper; // Gunakan BookmarkHelper
     private FragmentBookmarkBinding binding;
     public static final int REQUEST_CODE = 1;
 
@@ -36,11 +37,10 @@ public class BookmarkFragment extends Fragment {
         binding = FragmentBookmarkBinding.inflate(inflater, container, false);
         recyclerView = binding.bookmarkRecycler;
 
-        databaseHelper = new DatabaseHelper(getContext());
+        bookmarkHelper = new BookmarkHelper(getContext()); // Inisialisasi BookmarkHelper
 
-        // Mengambil data dari SQLite
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor cursor = db.query("bookmarks", null, null, null, null, null, null);
+        // Mengambil data dari SQLite melalui BookmarkHelper
+        Cursor cursor = bookmarkHelper.getAllBookmarks(); // Menggunakan BookmarkHelper untuk mendapatkan data
 
         // Menghubungkan cursor dengan adapter
         adapter = new BookmarkAdapter(getContext(), cursor);
@@ -70,8 +70,7 @@ public class BookmarkFragment extends Fragment {
 
     // Menambahkan method untuk memperbarui adapter setelah data disimpan
     public void refreshData() {
-        SQLiteDatabase db = databaseHelper.getReadableDatabase();
-        Cursor cursor = db.query("bookmarks", null, null, null, null, null, null);
-        adapter.swapCursor(cursor);
+        Cursor cursor = bookmarkHelper.getAllBookmarks(); // Mengambil ulang data dari BookmarkHelper
+        adapter.swapCursor(cursor);  // Update RecyclerView dengan data terbaru
     }
 }

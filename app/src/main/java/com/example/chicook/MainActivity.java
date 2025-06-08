@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.favorites) {
                 selectedFragment = new BookmarkFragment();
             } else if (id == R.id.community) {
-                selectedFragment = new CommunityFragment();
+                selectedFragment = new NotesFragment();
             }
 
             if (selectedFragment != null) {
