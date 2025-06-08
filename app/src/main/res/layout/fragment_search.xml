@@ -10,12 +10,24 @@
     <!-- Search View -->
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search"
-        android:layout_width="380dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:paddingStart="20dp"
         android:paddingEnd="8dp"
         android:layout_gravity="center"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/searchHistoryRecycler"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="2dp"
+        android:layout_marginBottom="2dp"
+        android:paddingStart="2dp"
+        android:paddingEnd="2dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:clipToPadding="false"/>
 
     <!-- Category Filter -->
     <HorizontalScrollView
@@ -33,54 +45,35 @@
             android:paddingStart="16dp"
             android:paddingEnd="16dp">
 
-            <!-- Category buttons (example categories) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_chicken"
-                android:layout_width="wrap_content"
+            <!-- Spinner untuk Category -->
+            <Spinner
+                android:id="@+id/spinnerCategory"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:backgroundTint="#FFFFFF"
-                android:text="Chicken"
-                android:textColor="#204C3B"
-                app:cornerRadius="16dp"
-                app:strokeColor="#204C3B"
-                app:strokeWidth="1dp" />
+                android:dropDownHeight="240dp"
+                android:overScrollMode="always"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_beef"
-                android:layout_width="wrap_content"
+            <!-- Spinner untuk Area -->
+            <Spinner
+                android:id="@+id/spinnerArea"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:backgroundTint="#FFFFFF"
-                android:text="Beef"
-                android:textColor="#204C3B"
-                app:cornerRadius="16dp"
-                app:strokeColor="#204C3B"
-                app:strokeWidth="1dp" />
+                android:dropDownHeight="240dp"
+                android:overScrollMode="always"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"/>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_seafood"
-                android:layout_width="wrap_content"
+            <!-- Spinner untuk Ingredient -->
+            <Spinner
+                android:id="@+id/spinnerIngredient"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:backgroundTint="#FFFFFF"
-                android:text="Seafood"
-                android:textColor="#204C3B"
-                app:cornerRadius="16dp"
-                app:strokeColor="#204C3B"
-                app:strokeWidth="1dp" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_pork"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="12dp"
-                android:backgroundTint="#FFFFFF"
-                android:text="Pork"
-                android:textColor="#204C3B"
-                app:cornerRadius="16dp"
-                app:strokeColor="#204C3B"
-                app:strokeWidth="1dp" />
+                android:dropDownHeight="240dp"
+                android:overScrollMode="always"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
 
         </LinearLayout>
     </HorizontalScrollView>

@@ -16,7 +16,7 @@ public interface ApiService {
     Call<MealResponse> searchMealsByArea(@Query("a") String area);
 
     @GET("categories.php")
-    Call<CategoryResponse> categoryMeals(@Query("") String categoryName);
+    Call<CategoryResponse> categoryMeals(@Query("c") String categoryName);  // Update parameter query
 
     @GET("random.php")
     Call<RandomMealResponse> randomMeals(@Query("") String randomMeal);

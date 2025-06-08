@@ -1,13 +1,19 @@
 package com.example.chicook;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
+
+import com.example.chicook.data.api.ApiConfig;
 import com.example.chicook.data.api.ApiService;
 import com.example.chicook.databinding.FragmentSearchBinding;
 import com.example.chicook.model.meal.Meal;
@@ -16,11 +22,11 @@ import com.example.chicook.model.meal.MealResponse;
 import com.example.chicook.model.randomMeals.RandomMeal;
 import com.example.chicook.model.randomMeals.RandomMealAdapter;
 import com.example.chicook.model.randomMeals.RandomMealResponse;
+import com.example.chicook.model.search.SearchHistoryAdapter;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,67 +39,235 @@ public class SearchFragment extends Fragment {
     private List<RandomMeal> randomMealsList = new ArrayList<>();
     private RandomMealAdapter randomMealAdapter;
 
-    private String selectedCategory = "";
-    private String selectedArea = "";
-    private String selectedIngredient = "";
+    private SharedPreferences sharedPreferences;
+    private static final String PREFS_NAME = "SearchPrefs";
+    private static final String PREF_SEARCH_HISTORY = "search_history";
+
+    private ArrayList<String> searchHistory = new ArrayList<>();
+    private SearchHistoryAdapter searchHistoryAdapter;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         binding = FragmentSearchBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        // Setup SharedPreferences
+        sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+        loadSearchHistory();
+
+        // Setup RecyclerView for search history
+        searchHistoryAdapter = new SearchHistoryAdapter(searchHistory, query -> {
+            binding.search.setQuery(query, false);
+            performSearch(query);
+        });
+        binding.searchHistoryRecycler.setAdapter(searchHistoryAdapter);
+
         // Setup RecyclerView for search results (2 columns for search results)
+        setupSearchRecycler();
+
+        // Setup RecyclerView for random meals (1 column for random meals)
+        setupRandomMealsRecycler();
+
+        // Initially hide the search results RecyclerView
+        showRandomMeals();
+
+        // Setup API service
+        apiService = ApiConfig.getCLient().create(ApiService.class);
+
+        // Fetch random meals to display
+        getRandomMeal(7);
+
+        // Set listener for the search query
+        setupSearchViewListener();
+
+        // Show search history when search view is focused
+        setupSearchViewFocusListener();
+
+        // Setup Spinners
+        setupSpinners();
+
+        return view;
+    }
+
+    private void setupSearchRecycler() {
         binding.searchRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mealsList = new ArrayList<>();
         mealAdapter = new MealAdapter(mealsList, getContext());
         binding.searchRecycler.setAdapter(mealAdapter);
+    }
 
-        // Setup RecyclerView for random meals (1 column for random meals)
+    private void setupRandomMealsRecycler() {
         randomMealsList = new ArrayList<>();
         randomMealAdapter = new RandomMealAdapter(randomMealsList, getContext());
         binding.randomSearchRecycler.setLayoutManager(new GridLayoutManager(getContext(), 1));
         binding.randomSearchRecycler.setAdapter(randomMealAdapter);
+    }
 
-        // Initially hide the search results RecyclerView
+    private void showRandomMeals() {
         binding.searchRecycler.setVisibility(View.GONE);
-        binding.randomSearchRecycler.setVisibility(View.VISIBLE);  // Show random meals initially
+        binding.randomSearchRecycler.setVisibility(View.VISIBLE);
+    }
 
-        // Initialize Retrofit
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://www.themealdb.com/api/json/v1/1/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+    private void loadSearchHistory() {
+        String savedHistory = sharedPreferences.getString(PREF_SEARCH_HISTORY, "");
+        if (!savedHistory.isEmpty()) {
+            String[] historyArray = savedHistory.split(",");
+            for (String query : historyArray) {
+                searchHistory.add(query);
+            }
+        }
+    }
 
-        apiService = retrofit.create(ApiService.class);
+    private void saveSearchQuery(String query) {
+        if (!searchHistory.contains(query)) {
+            searchHistory.add(0, query);  // Add latest query at the top
+        }
+        if (searchHistory.size() > 3) {
+            searchHistory.remove(searchHistory.size() - 1); // Limit to 3 items
+        }
+        sharedPreferences.edit().putString(PREF_SEARCH_HISTORY, String.join(",", searchHistory)).apply();
+        searchHistoryAdapter.notifyDataSetChanged();
+    }
 
-        // Fetch random meals to display
-        getRandomMeal(7);  // Fetch 7 random meals
+    private void performSearch(String query) {
+        saveSearchQuery(query);
+        handleSearch(query);
+    }
 
-        // Set listener for the search query
+    private void setupSearchViewListener() {
         binding.search.setOnQueryTextListener(new androidx.appcompat.widget.SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                handleSearch(query);
+                performSearch(query);
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 if (newText.isEmpty()) {
-                    // Hide search results if query is empty and show random meals
-                    binding.searchRecycler.setVisibility(View.GONE);
-                    binding.randomSearchRecycler.setVisibility(View.VISIBLE);
-                    getRandomMeal(7);  // Fetch 7 random meals again
+                    showRandomMeals();
+                    getRandomMeal(7);
+                    // Show the Spinners when search is cleared
+                    binding.spinnerCategory.setVisibility(View.VISIBLE);
+                    binding.spinnerArea.setVisibility(View.VISIBLE);
+                    binding.spinnerIngredient.setVisibility(View.VISIBLE);
+                } else {
+                    binding.spinnerCategory.setVisibility(View.GONE);
+                    binding.spinnerArea.setVisibility(View.GONE);
+                    binding.spinnerIngredient.setVisibility(View.GONE);
+                    handleSearch(newText);
                 }
                 return true;
             }
         });
+    }
 
-        // Set listener for category buttons
-        setCategoryButtonListeners();
+    private void setupSearchViewFocusListener() {
+        binding.search.setOnQueryTextFocusChangeListener((v, hasFocus) -> {
+            binding.searchHistoryRecycler.setVisibility(hasFocus ? View.VISIBLE : View.GONE);
+        });
+    }
 
-        return view;
+    private void setupSpinners() {
+        setupSpinner(binding.spinnerCategory, new String[]{"Select Category", "Beef", "Breakfast", "Chicken", "Dessert", "Goat", "Lamb", "Miscellaneous", "Pasta", "Pork", "Seafood", "Side", "Starter", "Vegan", "Vegetarian"});
+        setupSpinner(binding.spinnerArea, new String[]{"Select Area", "American", "British", "Canadian", "Chinese", "Croatian", "Dutch", "Egyptian", "Filipino", "French", "Greek", "Indian", "Irish", "Italian", "Jamaican", "Japanese", "Kenyan", "Malaysian", "Mexican", "Moroccan", "Russian", "Spanish", "Thai", "Tunisian", "Turkish", "Ukrainian", "Uruguayan", "Vietnamese"});
+        setupSpinner(binding.spinnerIngredient, new String[]{"Select Ingredient", "Avocado", "Asparagus", "Bacon", "Baking Powder", "Basil", "Black Paper", "Bread", "Broccoli", "Breadcrumbs", "Butter", "Cacao", "Carrot", "Celery", "Cheddar Cheese", "Cherry Tomatoes", "Chilli Powder", "Eggs", "Flour", "Fries", "Garlic", "Ginger", "Honey", "Ice Cream", "Jam", "Lemon", "Lime", "Macaroni", "Mayonaise", "Milk", "Mint", "Mushrooms", "Mustard", "Noodles", "Oil", "Onions", "Orange", "Paprika", "Parsley", "Peanuts", "Pepper", "Potatoes", "Rice", "Salt", "Spaghetti", "Sugar", "Tomatoes", "Tuna", "Vanilla", "Water", "Yougurt", "Cream Cheese", "Caramel", "Squid", "Salmon", "Pork", "Banana", "Blueberries", "Peaches", "Udon Noodles", "Ham", "Hazlenuts", "Almonds", "Cherry", "Oats", "Appels", "Tofu", "Gochujang", "Muffins"});
+    }
+
+    private void setupSpinner(Spinner spinner, String[] data) {
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, data);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                handleSpinnerSelection();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parentView) {}
+        });
+    }
+
+    private void handleSpinnerSelection() {
+        boolean isCategorySelected = binding.spinnerCategory.getSelectedItemPosition() > 0;
+        boolean isAreaSelected = binding.spinnerArea.getSelectedItemPosition() > 0;
+        boolean isIngredientSelected = binding.spinnerIngredient.getSelectedItemPosition() > 0;
+
+        // Check for more than one filter
+        if ((isCategorySelected && isAreaSelected) || (isCategorySelected && isIngredientSelected) || (isAreaSelected && isIngredientSelected)) {
+            Toast.makeText(getContext(), "Please select only one filter at a time.", Toast.LENGTH_SHORT).show();
+            resetSpinners(isCategorySelected, isAreaSelected, isIngredientSelected);
+            return;
+        }
+
+        if (!isCategorySelected && !isAreaSelected && !isIngredientSelected) {
+            showRandomMeals();
+            getRandomMeal(7);
+        } else {
+            binding.randomSearchRecycler.setVisibility(View.GONE);
+            binding.searchRecycler.setVisibility(View.VISIBLE);
+            handleFilteredSearch(isCategorySelected, isAreaSelected, isIngredientSelected);
+        }
+    }
+
+    private void resetSpinners(boolean isCategorySelected, boolean isAreaSelected, boolean isIngredientSelected) {
+        if (isCategorySelected && isAreaSelected) {
+            binding.spinnerArea.setSelection(0);
+        } else if (isCategorySelected && isIngredientSelected) {
+            binding.spinnerIngredient.setSelection(0);
+        } else if (isAreaSelected && isIngredientSelected) {
+            binding.spinnerCategory.setSelection(0);
+        }
+    }
+
+    private void handleFilteredSearch(boolean isCategorySelected, boolean isAreaSelected, boolean isIngredientSelected) {
+        String selectedCategory = isCategorySelected ? binding.spinnerCategory.getSelectedItem().toString() : null;
+        String selectedArea = isAreaSelected ? binding.spinnerArea.getSelectedItem().toString() : null;
+        String selectedIngredient = isIngredientSelected ? binding.spinnerIngredient.getSelectedItem().toString() : null;
+
+        if (selectedCategory != null) {
+            searchMealsByCategory(selectedCategory);
+        } else if (selectedArea != null) {
+            searchMealsByArea(selectedArea);
+        } else if (selectedIngredient != null) {
+            searchMealsByIngredient(selectedIngredient);
+        }
+    }
+
+    private void searchMealsByCategory(String category) {
+        Call<MealResponse> call = apiService.searchMealsByCategory(category);
+        handleMealSearch(call);
+    }
+
+    private void searchMealsByArea(String area) {
+        Call<MealResponse> call = apiService.searchMealsByArea(area);
+        handleMealSearch(call);
+    }
+
+    private void searchMealsByIngredient(String ingredient) {
+        Call<MealResponse> call = apiService.searchMealsByIngredient(ingredient);
+        handleMealSearch(call);
+    }
+
+    private void handleMealSearch(Call<MealResponse> call) {
+        call.enqueue(new Callback<MealResponse>() {
+            @Override
+            public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
+                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
+                    mealsList.clear();
+                    mealsList.addAll(response.body().getMeals());
+                    mealAdapter.notifyDataSetChanged();
+                } else {
+                    Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MealResponse> call, Throwable t) {
+                Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     // Fetch random meals (7 meals in this case)
@@ -134,9 +308,9 @@ public class SearchFragment extends Fragment {
         query = query.trim();
         if (query.isEmpty()) return;
 
-        String[] ingredients = {"Chicken", "Beef", "Tomato", "Egg", "Lemon"};
-        String[] areas = {"American", "British", "Canadian", "Chinese", "Dutch", "Egyptian", "French", "Greek", "Indian", "Irish", "Italian", "Jamaican", "Japanese", "Kenyan", "Malaysian", "Mexican", "Moroccan", "Russian", "Spanish", "Thai", "Tunisian", "Turkish", "Vietnamese"};
-        String[] categories = {"Beef", "Chicken", "Dessert", "Lamb", "Miscellaneous", "Pasta", "Pork", "Seafood", "Side", "Starter", "Vegan", "Vegetarian", "Breakfast", "Goat"};
+        String[] ingredients = {"Avocado", "Asparagus", "Bacon", "Baking Powder", "Basil", "Black Paper", "Bread", "Broccoli", "Breadcrumbs", "Butter", "Cacao", "Carrot", "Celery", "Cheddar Cheese", "Cherry Tomatoes", "Chilli Powder", "Eggs", "Flour", "Fries", "Garlic", "Ginger", "Honey", "Ice Cream", "Jam", "Lemon", "Lime", "Macaroni", "Mayonaise", "Milk", "Mint", "Mushrooms", "Mustard", "Noodles", "Oil", "Onions", "Orange", "Paprika", "Parsley", "Peanuts", "Pepper", "Potatoes", "Rice", "Salt", "Spaghetti", "Sugar", "Tomatoes", "Tuna", "Vanilla", "Water", "Yougurt", "Cream Cheese", "Caramel", "Squid", "Salmon", "Pork", "Banana", "Blueberries", "Peaches", "Udon Noodles", "Ham", "Hazlenuts", "Almonds", "Cherry", "Oats", "Appels", "Tofu", "Gochujang", "Muffins"};
+        String[] areas = {"American", "British", "Canadian", "Chinese", "Croatian", "Dutch", "Egyptian", "Filipino", "French", "Greek", "Indian", "Irish", "Italian", "Jamaican", "Japanese", "Kenyan", "Malaysian", "Mexican", "Moroccan", "Russian", "Spanish", "Thai", "Tunisian", "Turkish", "Ukrainian", "Uruguayan", "Vietnamese"};
+        String[] categories = {"Beef", "Breakfast", "Chicken", "Dessert", "Goat", "Lamb", "Miscellaneous", "Pasta", "Pork", "Seafood", "Side", "Starter", "Vegan", "Vegetarian"};
         boolean isIngredient = false;
         boolean isArea = false;
         boolean isCategory = false;
@@ -174,52 +348,6 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void searchMealsByArea(String area) {
-        Call<MealResponse> call = apiService.searchMealsByArea(area);
-        call.enqueue(new Callback<MealResponse>() {
-            @Override
-            public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
-                    mealsList.clear();
-                    mealsList.addAll(response.body().getMeals());
-                    mealAdapter.notifyDataSetChanged();
-                    binding.searchRecycler.setVisibility(View.VISIBLE);
-                } else {
-                    Toast.makeText(getContext(), "No results found for area: " + area, Toast.LENGTH_SHORT).show();
-                    binding.searchRecycler.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MealResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    private void searchMealsByIngredient(String ingredient) {
-        Call<MealResponse> call = apiService.searchMealsByIngredient(ingredient);
-        call.enqueue(new Callback<MealResponse>() {
-            @Override
-            public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
-                if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
-                    mealsList.clear();
-                    mealsList.addAll(response.body().getMeals());
-                    mealAdapter.notifyDataSetChanged();
-                    binding.searchRecycler.setVisibility(View.VISIBLE);
-                } else {
-                    Toast.makeText(getContext(), "No results found for ingredient: " + ingredient, Toast.LENGTH_SHORT).show();
-                    binding.searchRecycler.setVisibility(View.GONE);
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MealResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
     // Function to search meals by name
     private void searchMeals(String query) {
         Call<MealResponse> call = apiService.searchMeals(query);
@@ -241,56 +369,6 @@ public class SearchFragment extends Fragment {
             public void onFailure(Call<MealResponse> call, Throwable t) {
                 Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
             }
-        });
-    }
-
-    // Function to search meals by category
-    private void searchMealsByCategory(String category) {
-        Call<MealResponse> call = apiService.searchMealsByCategory(category);
-        call.enqueue(new Callback<MealResponse>() {
-            @Override
-            public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
-                if (response.isSuccessful() && response.body() != null) {
-                    mealsList.clear();
-                    mealsList.addAll(response.body().getMeals());
-                    mealAdapter.notifyDataSetChanged();
-                    binding.searchRecycler.setVisibility(View.VISIBLE);
-                } else {
-                    Toast.makeText(getContext(), "No results found for category: " + category, Toast.LENGTH_SHORT).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<MealResponse> call, Throwable t) {
-                Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-    // Function to set listeners on category buttons
-    private void setCategoryButtonListeners() {
-        binding.genreButtons.findViewById(R.id.button_chicken).setOnClickListener(view -> {
-            // Hide random meals and show search results for Chicken
-            binding.randomSearchRecycler.setVisibility(View.GONE);
-            binding.searchRecycler.setVisibility(View.VISIBLE);
-
-            // Fetch and display Chicken meals
-            searchMealsByCategory("Chicken");
-        });
-        binding.genreButtons.findViewById(R.id.button_beef).setOnClickListener(view -> {
-            binding.randomSearchRecycler.setVisibility(View.GONE);
-            binding.searchRecycler.setVisibility(View.VISIBLE);
-            searchMealsByCategory("Beef");
-        });
-        binding.genreButtons.findViewById(R.id.button_seafood).setOnClickListener(view -> {
-            binding.randomSearchRecycler.setVisibility(View.GONE);
-            binding.searchRecycler.setVisibility(View.VISIBLE);
-            searchMealsByCategory("Seafood");
-        });
-        binding.genreButtons.findViewById(R.id.button_pork).setOnClickListener(view -> {
-            binding.randomSearchRecycler.setVisibility(View.GONE);
-            binding.searchRecycler.setVisibility(View.VISIBLE);
-            searchMealsByCategory("Pork");
         });
     }
 }
