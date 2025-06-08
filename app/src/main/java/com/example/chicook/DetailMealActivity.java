@@ -4,14 +4,15 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Insets;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -38,23 +39,24 @@ public class DetailMealActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         binding = DetailResepBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Menyesuaikan padding untuk sistem bar
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
-            return insets;
-        });
+        // Tampilkan ProgressBar saat memuat data
+        binding.progressBar.setVisibility(View.VISIBLE); // Show ProgressBar while loading
 
-        // Inisialisasi DatabaseHelper
-        databaseHelper = new DatabaseHelper(this);
+        // Sembunyikan semua elemen UI (seperti TextView, RecyclerView, dll.) saat loading
+        binding.recipeTitle.setVisibility(View.GONE);
+        binding.recipeCategory.setVisibility(View.GONE);
+        binding.recipeArea.setVisibility(View.GONE);
+        binding.recipeInstructions.setVisibility(View.GONE);
+        binding.recipeIngredients.setVisibility(View.GONE);
+        binding.recipeImage.setVisibility(View.GONE);
+        binding.bookmarkButton.setVisibility(View.GONE);
 
         // Mendapatkan data yang dikirim melalui Intent
         Intent intent = getIntent();
-        mealId = intent.getStringExtra("mealId");  // Dapatkan mealId yang diterima dari Intent
+        mealId = intent.getStringExtra("mealId");
         String title = intent.getStringExtra("title");
         String category = intent.getStringExtra("category");
         String area = intent.getStringExtra("area");
@@ -62,7 +64,7 @@ public class DetailMealActivity extends AppCompatActivity {
         String ingredients = intent.getStringExtra("ingredients");
         String imageUrl = intent.getStringExtra("thumb");
 
-        // Menampilkan data pada elemen UI
+        // Menampilkan data pada elemen UI (untuk yang sudah tersedia)
         binding.recipeTitle.setText(title);
         binding.recipeCategory.setText(category);
         binding.recipeArea.setText(area);
@@ -73,6 +75,9 @@ public class DetailMealActivity extends AppCompatActivity {
         // Tombol kembali
         binding.backButton.setOnClickListener(v -> onBackPressed());
 
+        // Inisialisasi DatabaseHelper
+        databaseHelper = new DatabaseHelper(this);
+
         // Cek status bookmark saat activity dimulai
         checkBookmarkStatus();
 
@@ -80,24 +85,20 @@ public class DetailMealActivity extends AppCompatActivity {
         bookmarkButton = findViewById(R.id.bookmarkButton);
         bookmarkButton.setOnClickListener(v -> {
             if (!isBookmarked) {
-                // Jika belum dibookmark, simpan ke SQLite
                 saveBookmark(title, category, area, instructions, ingredients, imageUrl);
-                bookmarkButton.setImageResource(R.drawable.bookmark_on);  // Ganti ikon menjadi "bookmarked"
+                bookmarkButton.setImageResource(R.drawable.bookmark_on);
                 Toast.makeText(this, "Recipe bookmarked", Toast.LENGTH_SHORT).show();
                 isBookmarked = true;
             } else {
-                // Jika sudah dibookmark, hapus dari SQLite
                 removeBookmark();
-                bookmarkButton.setImageResource(R.drawable.bookmark_off);  // Ganti ikon menjadi "unbookmarked"
+                bookmarkButton.setImageResource(R.drawable.bookmark_off);
                 Toast.makeText(this, "Bookmark removed", Toast.LENGTH_SHORT).show();
                 isBookmarked = false;
             }
 
-            // Kirimkan hasil ke BookmarkFragment
             Intent resultIntent = new Intent();
             resultIntent.putExtra("status", isBookmarked ? "added" : "removed");
-            setResult(RESULT_OK, resultIntent);  // Kirim hasil kembali ke BookmarkFragment
-
+            setResult(RESULT_OK, resultIntent);
         });
 
         // Panggil API untuk mendapatkan detail resep berdasarkan mealId
@@ -149,7 +150,7 @@ public class DetailMealActivity extends AppCompatActivity {
     private void fetchMealDetail(String mealId) {
         // API call untuk mendapatkan detail resep berdasarkan mealId
         ApiService apiService = ApiConfig.getCLient().create(ApiService.class);
-        Call<MealResponse> callMeal = apiService.getMealDetailById(mealId);  // Memanggil API untuk mendapatkan detail berdasarkan ID
+        Call<MealResponse> callMeal = apiService.getMealDetailById(mealId);
 
         callMeal.enqueue(new Callback<MealResponse>() {
             @Override
@@ -158,9 +159,9 @@ public class DetailMealActivity extends AppCompatActivity {
                     // Update UI dengan data tambahan yang didapat dari API
                     String additionalInstructions = response.body().getMeals().get(0).getInstructions();
                     binding.recipeInstructions.setText(additionalInstructions);  // Update dengan instruksi lebih lengkap
-                    binding.recipeArea.setText(response.body().getMeals().get(0).getArea());  // Update area
-                    binding.recipeCategory.setText(response.body().getMeals().get(0).getCategory());  // Update kategori
-                    Picasso.get().load(response.body().getMeals().get(0).getMealThumb()).into(binding.recipeImage);  // Update gambar
+                    binding.recipeArea.setText(response.body().getMeals().get(0).getArea());
+                    binding.recipeCategory.setText(response.body().getMeals().get(0).getCategory());
+                    Picasso.get().load(response.body().getMeals().get(0).getMealThumb()).into(binding.recipeImage);
 
                     // Ambil meal data dari respons
                     Meal meal = response.body().getMeals().get(0);
@@ -182,14 +183,38 @@ public class DetailMealActivity extends AppCompatActivity {
 
                     // Tampilkan ingredients dan measures pada UI
                     binding.recipeIngredients.setText(ingredientsText.toString());
+
+                    // Menyembunyikan ProgressBar dan menampilkan elemen UI setelah selesai memuat data
+                    hideProgressBarIfFinished();
                 }
             }
 
             @Override
             public void onFailure(Call<MealResponse> call, Throwable t) {
                 // Menangani kegagalan jika API request gagal
-                Log.e("DetailMealActivity", "Failed to fetch meal details: " + t.getMessage());  // Log error untuk debugging
+                Log.e("DetailMealActivity", "Failed to fetch meal details: " + t.getMessage());
+
+                // Sembunyikan ProgressBar jika API gagal dan tampilkan pesan kesalahan
+                binding.progressBar.setVisibility(View.GONE);
+                Toast.makeText(DetailMealActivity.this, "Failed to load meal details", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void hideProgressBarIfFinished() {
+        // Cek jika meal data telah dimuat
+        if (binding.recipeTitle.getText() != null && !binding.recipeTitle.getText().toString().isEmpty()) {
+            // Sembunyikan ProgressBar
+            binding.progressBar.setVisibility(View.GONE);
+
+            // Tampilkan elemen-elemen UI
+            binding.recipeTitle.setVisibility(View.VISIBLE);
+            binding.recipeCategory.setVisibility(View.VISIBLE);
+            binding.recipeArea.setVisibility(View.VISIBLE);
+            binding.recipeInstructions.setVisibility(View.VISIBLE);
+            binding.recipeIngredients.setVisibility(View.VISIBLE);
+            binding.recipeImage.setVisibility(View.VISIBLE);
+            binding.bookmarkButton.setVisibility(View.VISIBLE);
+        }
     }
 }

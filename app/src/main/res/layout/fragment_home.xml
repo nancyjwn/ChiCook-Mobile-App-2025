@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -17,7 +16,6 @@
         android:orientation="horizontal"
         android:padding="12dp">
 
-        <!--        Logo ini nah-->
         <ImageView
             android:layout_width="120dp"
             android:layout_height="40dp"
@@ -28,13 +26,13 @@
             android:layout_height="0dp"
             android:layout_weight="1" />
 
-        <!--        icon setting ini atau terserah apa bisa juga profilenya kalau pakeko foto profile setiap orang-->
         <ImageView
             android:layout_width="24dp"
             android:src="@drawable/setting"
             android:layout_height="24dp" />
     </LinearLayout>
 
+    <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -48,7 +46,6 @@
             android:orientation="vertical"
             android:padding="12dp">
 
-            <!--            ini bisa mu kasih radius sih lebih bagus cuma ini tidak karena nanti terpisah lagi kodenya ehehe tanyami gpt mirip ji tp sebelumnya caranya-->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/carouselRecycler"
                 android:layout_width="match_parent"
@@ -62,12 +59,13 @@
                 tools:listitem="@layout/carousel_item" />
 
             <View
+                android:id="@+id/garisDirandom"
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:background="#204C3B" />
 
-            <!-- Top Category -->
             <TextView
+                android:id="@+id/topCategoryText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -85,8 +83,8 @@
                 android:orientation="horizontal"
                 tools:listitem="@layout/category_item" />
 
-            <!-- Rekomendasi -->
             <TextView
+                android:id="@+id/recommendationText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
@@ -104,6 +102,13 @@
                 app:spanCount="2"
                 tools:listitem="@layout/resep_item" />
 
+            <!-- ProgressBar untuk loading -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

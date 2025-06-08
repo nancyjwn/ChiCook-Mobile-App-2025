@@ -34,13 +34,12 @@ import retrofit2.Response;
 public class HomeFragment extends Fragment {
 
     private MealAdapter mealAdapter;
-    private CategoryAdapter categoryAdapter;  // Adapter untuk kategori
-    private RandomMealAdapter randomMealAdapter; // Adapter untuk makanan acak
+    private CategoryAdapter categoryAdapter;
+    private RandomMealAdapter randomMealAdapter;
     private FragmentHomeBinding binding;
-    private Handler handler = new Handler();  // Handler untuk penjadwalan
-    private int currentMealIndex = 0;  // Menyimpan index meal yang sedang ditampilkan
+    private Handler handler = new Handler();
+    private int currentMealIndex = 0;
     private List<RandomMeal> randomMealsList = new ArrayList<>();
-
     private List<String> selectedCategories = new ArrayList<String>() {{
         add("Beef");
         add("Chicken");
@@ -52,7 +51,14 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment using ViewBinding
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
-        // Setup RecyclerView dengan GridLayoutManager untuk makanan dan kategori
+        // Tampilkan ProgressBar saat memuat data
+        binding.progressBar.setVisibility(View.VISIBLE);  // Menampilkan ProgressBar saat halaman pertama kali dibuka
+        // Sembunyikan elemen lainnya
+        binding.topCategoryText.setVisibility(View.GONE);
+        binding.recommendationText.setVisibility(View.GONE);
+        binding.garisDirandom.setVisibility(View.GONE);
+
+        // Set up RecyclerView dengan GridLayoutManager
         binding.recommendationRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2)); // Untuk makanan
 
         // Return the root view of the fragment
@@ -63,14 +69,14 @@ public class HomeFragment extends Fragment {
         // Memanggil API randomMeals() tiga kali untuk mendapatkan 3 resep acak
         fetchRandomMeals(apiService);
 
-        // Menggunakan Handler untuk menjalankan pemanggilan random meal setiap 3 detik
+        // Menggunakan Handler untuk menjalankan pemanggilan random meal setiap 5 detik
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                fetchRandomMeals(apiService); // Memanggil fungsi fetchRandomMeal
-                handler.postDelayed(this, 5000); // Mengulang setiap 3 detik
+                fetchRandomMeals(apiService);
+                handler.postDelayed(this, 5000); // Mengulang setiap 5 detik
             }
-        }, 3000);  // Mulai setelah 3 detik pertama
+        }, 3000);
 
         // Memanggil API untuk mendapatkan kategori makanan
         fetchCategories(apiService);
@@ -81,19 +87,29 @@ public class HomeFragment extends Fragment {
         return rootView;
     }
 
+    // Fungsi untuk menyembunyikan ProgressBar dan menampilkan elemen lainnya setelah selesai
+    private void hideProgressBarIfFinished() {
+        if (randomMealsList.size() > 0 && categoryAdapter != null && mealAdapter != null) {
+            binding.progressBar.setVisibility(View.GONE); // Sembunyikan ProgressBar
+            binding.topCategoryText.setVisibility(View.VISIBLE); // Menampilkan Top Kategori
+            binding.recommendationText.setVisibility(View.VISIBLE); // Menampilkan Rekomendasi untuk Anda
+            binding.garisDirandom.setVisibility(View.VISIBLE); // Menampilkan garis pembatas
+        }
+    }
+
     // Fungsi untuk memanggil random meal API dan memperbarui RecyclerView
     private void fetchRandomMeals(ApiService apiService) {
-        Call<RandomMealResponse> call = apiService.randomMeals("");  // Memanggil random.php untuk mendapatkan resep acak
+        Call<RandomMealResponse> call = apiService.randomMeals("");
         call.enqueue(new Callback<RandomMealResponse>() {
             @Override
             public void onResponse(Call<RandomMealResponse> call, Response<RandomMealResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    RandomMeal meal = response.body().getMeals().get(0);  // Mengambil meal pertama dari response
-                    randomMealsList.add(meal);  // Menambahkan meal ke dalam list
+                    RandomMeal meal = response.body().getMeals().get(0);
+                    randomMealsList.add(meal);
 
-                    // Menampilkan meal berikutnya setiap 3 detik
+                    // Menampilkan meal berikutnya setiap 5 detik
                     if (randomMealsList.size() > 5) {
-                        randomMealsList.remove(0);  // Hapus meal pertama agar hanya menampilkan 3 meal terakhir
+                        randomMealsList.remove(0);
                     }
 
                     // Update adapter dan tampilkan resep acak
@@ -102,18 +118,21 @@ public class HomeFragment extends Fragment {
                 } else {
                     Toast.makeText(getContext(), "No meals found", Toast.LENGTH_SHORT).show();
                 }
+
+                // Sembunyikan ProgressBar dan TextView setelah API selesai
+                hideProgressBarIfFinished();
             }
 
             @Override
             public void onFailure(Call<RandomMealResponse> call, Throwable t) {
                 Log.e("HomeFragment", "API call for random meal failed: " + t.getMessage());
+                hideProgressBarIfFinished(); // Sembunyikan ProgressBar jika API gagal
             }
         });
     }
 
     private void fetchCategories(ApiService apiService) {
-        // Memanggil API untuk mendapatkan kategori makanan
-        Call<CategoryResponse> callCategory = apiService.categoryMeals("");  // Memanggil kategori
+        Call<CategoryResponse> callCategory = apiService.categoryMeals("");
         callCategory.enqueue(new Callback<CategoryResponse>() {
             @Override
             public void onResponse(Call<CategoryResponse> call, Response<CategoryResponse> response) {
@@ -129,37 +148,44 @@ public class HomeFragment extends Fragment {
                     }
 
                     // Menampilkan kategori yang telah difilter
-                    categoryAdapter = new CategoryAdapter(filteredCategories, getContext());  // panggil filter
-                    binding.topCategoryRecycler.setAdapter(categoryAdapter);  // Menampilkan kategori
+                    categoryAdapter = new CategoryAdapter(filteredCategories, getContext());
+                    binding.topCategoryRecycler.setAdapter(categoryAdapter);
                 } else {
                     Toast.makeText(getContext(), "No categories found", Toast.LENGTH_SHORT).show();
                 }
+
+                // Sembunyikan ProgressBar dan TextView setelah API selesai
+                hideProgressBarIfFinished();
             }
 
             @Override
             public void onFailure(Call<CategoryResponse> call, Throwable t) {
                 Log.e("HomeFragment", "API call for categories failed: " + t.getMessage());
+                hideProgressBarIfFinished(); // Sembunyikan ProgressBar jika API gagal
             }
         });
     }
 
     private void fetchMeals(ApiService apiService) {
-        // Memanggil API untuk mencari makanan berdasarkan nama (misalnya "Chicken")
-        Call<MealResponse> callMeal = apiService.searchMeals("");  // Makanan berdasarkan nama
+        Call<MealResponse> callMeal = apiService.searchMeals("");
         callMeal.enqueue(new Callback<MealResponse>() {
             @Override
             public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    mealAdapter = new MealAdapter(response.body().getMeals(), getContext());  // Menggunakan adapter untuk makanan
-                    binding.recommendationRecycler.setAdapter(mealAdapter);  // Menampilkan makanan
+                    mealAdapter = new MealAdapter(response.body().getMeals(), getContext());
+                    binding.recommendationRecycler.setAdapter(mealAdapter);
                 } else {
                     Toast.makeText(getContext(), "No meals found", Toast.LENGTH_SHORT).show();
                 }
+
+                // Sembunyikan ProgressBar dan TextView setelah API selesai
+                hideProgressBarIfFinished();
             }
 
             @Override
             public void onFailure(Call<MealResponse> call, Throwable t) {
                 Log.e("HomeFragment", "API call for meals failed: " + t.getMessage());
+                hideProgressBarIfFinished(); // Sembunyikan ProgressBar jika API gagal
             }
         });
     }

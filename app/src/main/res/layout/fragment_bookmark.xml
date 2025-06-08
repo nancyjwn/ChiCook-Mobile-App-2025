@@ -13,8 +13,19 @@
         android:text="Welcome to Bookmark"
         android:textSize="24sp"
         android:textStyle="bold"
-        android:textColor="#2C3E50"/>
+        android:textColor="#2C3E50"
+        android:padding="16dp"/>
 
+    <!-- ProgressBar for loading state -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone"
+        android:layout_marginTop="16dp"/>
+
+    <!-- RecyclerView to display bookmark items -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/bookmarkRecycler"
         android:layout_width="match_parent"

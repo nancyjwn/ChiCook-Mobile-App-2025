@@ -83,30 +83,44 @@ public class NotesFragment extends Fragment {
     }
 
     private void loadNotes() {
-        new LoadNotesAsync(getContext(), notes -> {
-            if (notes.size() > 0) {
-                adapter.setNotes(notes);
-                binding.noData.setVisibility(View.GONE);
-            } else {
-                adapter.setNotes(new ArrayList<>());
-                binding.noData.setVisibility(View.VISIBLE);
-                showToast("No data available");
-            }
-        }).execute();
+        binding.progressBar.setVisibility(View.VISIBLE);
+        new Thread(() -> {
+            noteHelper.open();
+            Cursor notesCursor = noteHelper.queryAll();
+            ArrayList<Note> notes = MappingHelper.mapCursorToArrayList(notesCursor);
+            notesCursor.close();
+            noteHelper.close();
+
+            // Add artificial delay
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+            getActivity().runOnUiThread(() -> {
+                if (notes.size() > 0) {
+                    adapter.setNotes(notes);
+                    binding.noData.setVisibility(View.GONE);
+                } else {
+                    adapter.setNotes(new ArrayList<>());
+                    binding.noData.setVisibility(View.VISIBLE);
+                    showToast("No data available");
+                }
+                binding.progressBar.setVisibility(View.GONE);
+            });
+        }).start();
     }
 
     private void searchNotes(String query) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Handler handler = new Handler(Looper.getMainLooper());
-
-        executor.execute(() -> {
+        binding.progressBar.setVisibility(View.VISIBLE);
+        new Thread(() -> {
             noteHelper.open();
             Cursor cursor = noteHelper.searchByJudul(query);
             ArrayList<Note> result = MappingHelper.mapCursorToArrayList(cursor);
             cursor.close();
             noteHelper.close();
 
-            handler.post(() -> {
+            // Add artificial delay
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+            getActivity().runOnUiThread(() -> {
                 if (result.size() > 0) {
                     adapter.setNotes(result);
                     binding.noData.setVisibility(View.GONE);
@@ -114,8 +128,9 @@ public class NotesFragment extends Fragment {
                     adapter.setNotes(new ArrayList<>());
                     binding.noData.setVisibility(View.VISIBLE);
                 }
+                binding.progressBar.setVisibility(View.GONE);
             });
-        });
+        }).start();
     }
 
     @Override

@@ -2,6 +2,7 @@ package com.example.chicook;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,6 +28,9 @@ public class CategoryMealsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = CategoryMealsDetailBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Show progress bar while loading data
+        binding.progressBar.setVisibility(View.VISIBLE);
 
         // Get the selected category from the Intent
         Intent intent = getIntent();
@@ -57,16 +61,24 @@ public class CategoryMealsActivity extends AppCompatActivity {
                 if (response.isSuccessful() && response.body() != null) {
                     mealAdapter = new MealAdapter(response.body().getMeals(), CategoryMealsActivity.this);
                     binding.categoryMealsRecycler.setAdapter(mealAdapter);  // Display meals based on category
-
                 } else {
                     Toast.makeText(CategoryMealsActivity.this, "No meals found", Toast.LENGTH_SHORT).show();
                 }
+
+                // Hide ProgressBar after data is loaded
+                hideProgressBar();
             }
 
             @Override
             public void onFailure(Call<MealResponse> call, Throwable t) {
                 Toast.makeText(CategoryMealsActivity.this, "API call for meals failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                hideProgressBar(); // Hide ProgressBar if API call fails
             }
         });
+    }
+
+    private void hideProgressBar() {
+        // Hide the progress bar when loading is complete
+        binding.progressBar.setVisibility(View.GONE);
     }
 }

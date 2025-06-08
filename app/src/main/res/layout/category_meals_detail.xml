@@ -86,6 +86,7 @@
 
         <!-- Subtitle Section -->
         <LinearLayout
+            android:id="@+id/subtitleSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -108,6 +109,13 @@
                 android:textStyle="normal"/>
 
         </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:visibility="gone" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoryMealsRecycler"

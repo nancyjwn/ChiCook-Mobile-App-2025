@@ -181,11 +181,14 @@ public class SearchFragment extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                // Tampilkan ProgressBar sebelum mengambil data
+                binding.progressBar.setVisibility(View.VISIBLE);
                 handleSpinnerSelection();
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parentView) {}
+            public void onNothingSelected(AdapterView<?> parentView) {
+            }
         });
     }
 
@@ -194,13 +197,14 @@ public class SearchFragment extends Fragment {
         boolean isAreaSelected = binding.spinnerArea.getSelectedItemPosition() > 0;
         boolean isIngredientSelected = binding.spinnerIngredient.getSelectedItemPosition() > 0;
 
-        // Check for more than one filter
+        // Cek filter lebih dari satu
         if ((isCategorySelected && isAreaSelected) || (isCategorySelected && isIngredientSelected) || (isAreaSelected && isIngredientSelected)) {
             Toast.makeText(getContext(), "Please select only one filter at a time.", Toast.LENGTH_SHORT).show();
             resetSpinners(isCategorySelected, isAreaSelected, isIngredientSelected);
             return;
         }
 
+        // Menampilkan hasil berdasarkan filter
         if (!isCategorySelected && !isAreaSelected && !isIngredientSelected) {
             showRandomMeals();
             getRandomMeal(7);
@@ -254,6 +258,7 @@ public class SearchFragment extends Fragment {
         call.enqueue(new Callback<MealResponse>() {
             @Override
             public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
+                binding.progressBar.setVisibility(View.GONE); // Tambahkan di sini
                 if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
                     mealsList.clear();
                     mealsList.addAll(response.body().getMeals());
@@ -265,6 +270,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onFailure(Call<MealResponse> call, Throwable t) {
+                binding.progressBar.setVisibility(View.GONE); // Pastikan juga di sini
                 Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
             }
         });
@@ -274,6 +280,9 @@ public class SearchFragment extends Fragment {
     private void getRandomMeal(int count) {
         randomMealsList.clear();
         randomMealAdapter.notifyDataSetChanged();
+
+        // Tampilkan ProgressBar saat mulai mengambil data
+        binding.progressBar.setVisibility(View.VISIBLE);
 
         final int[] loadedCount = {0};
         for (int i = 0; i < count; i++) {
@@ -288,6 +297,9 @@ public class SearchFragment extends Fragment {
                     if (loadedCount[0] == count) {
                         randomMealAdapter.notifyDataSetChanged();
                         binding.randomSearchRecycler.setVisibility(View.VISIBLE);
+
+                        // Sembunyikan ProgressBar setelah selesai mengambil data
+                        binding.progressBar.setVisibility(View.GONE);
                     }
                 }
 
@@ -297,6 +309,9 @@ public class SearchFragment extends Fragment {
                     if (loadedCount[0] == count) {
                         randomMealAdapter.notifyDataSetChanged();
                         binding.randomSearchRecycler.setVisibility(View.VISIBLE);
+
+                        // Sembunyikan ProgressBar jika gagal
+                        binding.progressBar.setVisibility(View.GONE);
                     }
                 }
             });
@@ -307,6 +322,8 @@ public class SearchFragment extends Fragment {
     private void handleSearch(String query) {
         query = query.trim();
         if (query.isEmpty()) return;
+
+        binding.progressBar.setVisibility(View.VISIBLE);
 
         String[] ingredients = {"Avocado", "Asparagus", "Bacon", "Baking Powder", "Basil", "Black Paper", "Bread", "Broccoli", "Breadcrumbs", "Butter", "Cacao", "Carrot", "Celery", "Cheddar Cheese", "Cherry Tomatoes", "Chilli Powder", "Eggs", "Flour", "Fries", "Garlic", "Ginger", "Honey", "Ice Cream", "Jam", "Lemon", "Lime", "Macaroni", "Mayonaise", "Milk", "Mint", "Mushrooms", "Mustard", "Noodles", "Oil", "Onions", "Orange", "Paprika", "Parsley", "Peanuts", "Pepper", "Potatoes", "Rice", "Salt", "Spaghetti", "Sugar", "Tomatoes", "Tuna", "Vanilla", "Water", "Yougurt", "Cream Cheese", "Caramel", "Squid", "Salmon", "Pork", "Banana", "Blueberries", "Peaches", "Udon Noodles", "Ham", "Hazlenuts", "Almonds", "Cherry", "Oats", "Appels", "Tofu", "Gochujang", "Muffins"};
         String[] areas = {"American", "British", "Canadian", "Chinese", "Croatian", "Dutch", "Egyptian", "Filipino", "French", "Greek", "Indian", "Irish", "Italian", "Jamaican", "Japanese", "Kenyan", "Malaysian", "Mexican", "Moroccan", "Russian", "Spanish", "Thai", "Tunisian", "Turkish", "Ukrainian", "Uruguayan", "Vietnamese"};
@@ -350,6 +367,7 @@ public class SearchFragment extends Fragment {
 
     // Function to search meals by name
     private void searchMeals(String query) {
+        binding.progressBar.setVisibility(View.VISIBLE);
         Call<MealResponse> call = apiService.searchMeals(query);
         call.enqueue(new Callback<MealResponse>() {
             @Override
@@ -358,16 +376,21 @@ public class SearchFragment extends Fragment {
                     mealsList.clear();
                     mealsList.addAll(response.body().getMeals());
                     mealAdapter.notifyDataSetChanged();
-                    binding.searchRecycler.setVisibility(View.VISIBLE);  // Show RecyclerView with search results
+                    binding.searchRecycler.setVisibility(View.VISIBLE);
                 } else {
                     Toast.makeText(getContext(), "No results found", Toast.LENGTH_SHORT).show();
                     binding.searchRecycler.setVisibility(View.GONE);  // Hide if no results
                 }
+
+                // Sembunyikan ProgressBar setelah pencarian selesai
+                binding.progressBar.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Call<MealResponse> call, Throwable t) {
                 Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
+                // Sembunyikan ProgressBar jika terjadi error
+                binding.progressBar.setVisibility(View.GONE);
             }
         });
     }
