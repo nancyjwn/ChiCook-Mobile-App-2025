@@ -44,7 +44,7 @@ public class SearchFragment extends Fragment {
     private ApiService apiService;
     private List<RandomMeal> randomMealsList = new ArrayList<>();
     private RandomMealAdapter randomMealAdapter;
-
+    private Spinner lastChangedSpinner = null;
     private SharedPreferences sharedPreferences;
     private static final String PREFS_NAME = "SearchPrefs";
     private static final String PREF_SEARCH_HISTORY = "search_history";
@@ -200,14 +200,13 @@ public class SearchFragment extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // Show ProgressBar before fetching data
+                lastChangedSpinner = spinner; // Track which spinner was changed
                 binding.progressBar.setVisibility(View.VISIBLE);
                 handleSpinnerSelection();
             }
 
             @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-            }
+            public void onNothingSelected(AdapterView<?> parentView) {}
         });
     }
 
@@ -216,15 +215,15 @@ public class SearchFragment extends Fragment {
         boolean isAreaSelected = binding.spinnerArea.getSelectedItemPosition() > 0;
         boolean isIngredientSelected = binding.spinnerIngredient.getSelectedItemPosition() > 0;
 
-        // Check if multiple filters are selected
-        if ((isCategorySelected && isAreaSelected) || (isCategorySelected && isIngredientSelected) || (isAreaSelected && isIngredientSelected)) {
+        int selectedCount = (isCategorySelected ? 1 : 0) + (isAreaSelected ? 1 : 0) + (isIngredientSelected ? 1 : 0);
+
+        if (selectedCount > 1) {
             Toast.makeText(getContext(), "Please select only one filter at a time.", Toast.LENGTH_SHORT).show();
-            resetSpinners(isCategorySelected, isAreaSelected, isIngredientSelected);
+            resetSpinners();
             return;
         }
 
-        // Show results based on filter
-        if (!isCategorySelected && !isAreaSelected && !isIngredientSelected) {
+        if (selectedCount == 0) {
             showRandomMeals();
             getRandomMeal(7);
         } else {
@@ -234,13 +233,9 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void resetSpinners(boolean isCategorySelected, boolean isAreaSelected, boolean isIngredientSelected) {
-        if (isCategorySelected && isAreaSelected) {
-            binding.spinnerArea.setSelection(0);
-        } else if (isCategorySelected && isIngredientSelected) {
-            binding.spinnerIngredient.setSelection(0);
-        } else if (isAreaSelected && isIngredientSelected) {
-            binding.spinnerCategory.setSelection(0);
+    private void resetSpinners() {
+        if (lastChangedSpinner != null) {
+            lastChangedSpinner.setSelection(0);
         }
     }
 

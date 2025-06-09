@@ -51,6 +51,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ThemeHelper.applyTheme(requireContext());
+
         // Inflate the layout for this fragment using ViewBinding
         binding = FragmentHomeBinding.inflate(inflater, container, false);
 
