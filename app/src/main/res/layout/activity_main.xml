@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ECECEC"
+    android:background="?android:attr/windowBackground"
     tools:context=".MainActivity">
 
     <FrameLayout
@@ -31,7 +31,7 @@
             style="@style/NoRippleStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="?android:attr/windowBackground"
             app:itemIconTint="@color/utama"
             app:itemTextColor="@color/utama"
             app:labelVisibilityMode="labeled"

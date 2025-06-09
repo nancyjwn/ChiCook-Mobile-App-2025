@@ -4,8 +4,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:backgroundTint="#ECECEC"
-    android:background="#F8F9FA">
+    android:background="?android:attr/windowBackground">
 
     <!-- Header Card with Back Button -->
     <androidx.cardview.widget.CardView

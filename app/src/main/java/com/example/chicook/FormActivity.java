@@ -36,6 +36,7 @@ public class FormActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeHelper.applyTheme(this);
         super.onCreate(savedInstanceState);
 
         // Menggunakan ViewBinding untuk mengakses layout

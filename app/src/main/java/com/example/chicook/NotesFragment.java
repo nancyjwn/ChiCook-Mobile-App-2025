@@ -14,16 +14,15 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.SearchView;
 
 import com.example.chicook.data.sqlite.NoteHelper;
 import com.example.chicook.databinding.FragmentNotesBinding;
+import com.example.chicook.model.note.MappingHelper;
 import com.example.chicook.model.note.Note;
 import com.example.chicook.model.note.NoteAdapter;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -33,22 +32,29 @@ public class NotesFragment extends Fragment {
     private RecyclerView rvStudent;
     private NoteAdapter adapter;
     private NoteHelper noteHelper;
-    private FragmentNotesBinding binding;  // Deklarasi ViewBinding
+    private FragmentNotesBinding binding;
     private final int REQUEST_ADD = 100;
     private final int REQUEST_UPDATE = 200;
+
+    private ExecutorService executorService;
+    private Handler handler;
 
     public NotesFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        binding = FragmentNotesBinding.inflate(inflater, container, false);  // Menggunakan ViewBinding
+        ThemeHelper.applyTheme(requireContext());
+        binding = FragmentNotesBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
 
+        // Initialize ExecutorService and Handler
+        executorService = Executors.newSingleThreadExecutor();
+        handler = new Handler(Looper.getMainLooper()); // Handler to update UI on main thread
+
         // Set up RecyclerView with GridLayoutManager
-        rvStudent = binding.rvStudents;  // Menggunakan binding untuk akses RecyclerView
-        rvStudent.setLayoutManager(new GridLayoutManager(getContext(), 2));  // Menggunakan GridLayoutManager dengan 2 kolom
+        rvStudent = binding.rvStudents;
+        rvStudent.setLayoutManager(new GridLayoutManager(getContext(), 2));
         adapter = new NoteAdapter(getContext());
         rvStudent.setAdapter(adapter);
 
@@ -84,17 +90,18 @@ public class NotesFragment extends Fragment {
 
     private void loadNotes() {
         binding.progressBar.setVisibility(View.VISIBLE);
-        new Thread(() -> {
+        executorService.execute(() -> {
             noteHelper.open();
             Cursor notesCursor = noteHelper.queryAll();
             ArrayList<Note> notes = MappingHelper.mapCursorToArrayList(notesCursor);
             notesCursor.close();
             noteHelper.close();
 
-            // Add artificial delay
+            // Artificial delay (optional)
             try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 
-            getActivity().runOnUiThread(() -> {
+            // Update UI in the main thread
+            handler.post(() -> {
                 if (notes.size() > 0) {
                     adapter.setNotes(notes);
                     binding.noData.setVisibility(View.GONE);
@@ -105,22 +112,23 @@ public class NotesFragment extends Fragment {
                 }
                 binding.progressBar.setVisibility(View.GONE);
             });
-        }).start();
+        });
     }
 
     private void searchNotes(String query) {
         binding.progressBar.setVisibility(View.VISIBLE);
-        new Thread(() -> {
+        executorService.execute(() -> {
             noteHelper.open();
             Cursor cursor = noteHelper.searchByJudul(query);
             ArrayList<Note> result = MappingHelper.mapCursorToArrayList(cursor);
             cursor.close();
             noteHelper.close();
 
-            // Add artificial delay
+            // Artificial delay (optional)
             try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 
-            getActivity().runOnUiThread(() -> {
+            // Update UI in the main thread
+            handler.post(() -> {
                 if (result.size() > 0) {
                     adapter.setNotes(result);
                     binding.noData.setVisibility(View.GONE);
@@ -130,7 +138,7 @@ public class NotesFragment extends Fragment {
                 }
                 binding.progressBar.setVisibility(View.GONE);
             });
-        }).start();
+        });
     }
 
     @Override
@@ -166,43 +174,5 @@ public class NotesFragment extends Fragment {
     public void onResume() {
         super.onResume();
         loadNotes();
-    }
-
-    private static class LoadNotesAsync {
-        private final WeakReference<Context> weakContext;
-        private final WeakReference<LoadNotesCallback> weakCallback;
-
-        private LoadNotesAsync(Context context, LoadNotesCallback callback) {
-            weakContext = new WeakReference<>(context);
-            weakCallback = new WeakReference<>(callback);
-        }
-
-        void execute() {
-            ExecutorService executor = Executors.newSingleThreadExecutor();
-            Handler handler = new Handler(Looper.getMainLooper());
-
-            executor.execute(() -> {
-                Context context = weakContext.get();
-                if (context != null) {
-                    NoteHelper noteHelper = NoteHelper.getInstance(context);
-                    noteHelper.open();
-                    Cursor notesCursor = noteHelper.queryAll();
-                    ArrayList<Note> notes = MappingHelper.mapCursorToArrayList(notesCursor);
-                    notesCursor.close();
-                    noteHelper.close();
-
-                    handler.post(() -> {
-                        LoadNotesCallback callback = weakCallback.get();
-                        if (callback != null) {
-                            callback.postExecute(notes);
-                        }
-                    });
-                }
-            });
-        }
-    }
-
-    interface LoadNotesCallback {
-        void postExecute(ArrayList<Note> notes);
     }
 }

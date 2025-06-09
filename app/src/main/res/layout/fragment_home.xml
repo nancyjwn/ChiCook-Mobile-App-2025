@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ECECEC"
+    android:background="?android:attr/windowBackground"
     tools:context=".HomeFragment">
 
     <!-- Navbar -->
@@ -11,7 +11,7 @@
         android:id="@+id/navbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#204C3B"
+        android:background="@color/utama"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="12dp">
@@ -27,9 +27,18 @@
             android:layout_weight="1" />
 
         <ImageView
-            android:layout_width="24dp"
-            android:src="@drawable/setting"
-            android:layout_height="24dp" />
+            android:id="@+id/imgToggleTheme"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@drawable/ic_light_mode"
+            android:contentDescription="Toggle Theme"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:transitionName="themeSwitchIcon" />
     </LinearLayout>
 
     <!-- Scrollable Content -->
@@ -70,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:text="Top Kategori"
-                android:textColor="#204C3B"
+                android:textColor="@color/utama"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -89,7 +98,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="Rekomendasi untuk Anda"
-                android:textColor="#204C3B"
+                android:textColor="@color/utama"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 

@@ -1,9 +1,8 @@
-package com.example.chicook;
+package com.example.chicook.model.note;
 
 import android.database.Cursor;
 
 import com.example.chicook.data.sqlite.DatabaseContract;
-import com.example.chicook.model.note.Note;
 
 import java.util.ArrayList;
 

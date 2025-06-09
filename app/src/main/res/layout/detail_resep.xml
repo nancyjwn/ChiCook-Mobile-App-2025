@@ -6,7 +6,7 @@
     android:id="@+id/main"
     tools:context=".DetailMealActivity"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#ECECEC">
+    android:background="?android:attr/windowBackground">
 
     <LinearLayout
         android:layout_width="match_parent"

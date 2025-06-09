@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,9 @@ import android.view.ViewGroup;
 import com.example.chicook.data.sqlite.BookmarkHelper;
 import com.example.chicook.databinding.FragmentBookmarkBinding;
 import com.example.chicook.model.bookmark.BookmarkAdapter;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class BookmarkFragment extends Fragment {
 
@@ -27,12 +31,20 @@ public class BookmarkFragment extends Fragment {
     private FragmentBookmarkBinding binding;
     public static final int REQUEST_CODE = 1;
 
+    private ExecutorService executorService;
+    private Handler handler;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        ThemeHelper.applyTheme(requireContext());
         // Inflate the layout for this fragment
         binding = FragmentBookmarkBinding.inflate(inflater, container, false);
         recyclerView = binding.bookmarkRecycler;
+
+        // Initialize ExecutorService and Handler
+        executorService = Executors.newSingleThreadExecutor();
+        handler = new Handler(Looper.getMainLooper()); // Handler to update UI on main thread
 
         bookmarkHelper = new BookmarkHelper(getContext()); // Initialize BookmarkHelper
 
@@ -46,14 +58,15 @@ public class BookmarkFragment extends Fragment {
     }
 
     private void fetchBookmarksInBackground() {
-        new Thread(() -> {
+        executorService.execute(() -> {
             // Fetch data from SQLite using BookmarkHelper
             Cursor cursor = bookmarkHelper.getAllBookmarks();
 
-            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); } // 1 second delay
+            // Add artificial delay (optional)
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
 
             // After data is fetched, update UI on the main thread
-            new Handler(getActivity().getMainLooper()).post(() -> {
+            handler.post(() -> {
                 // Connect cursor with adapter
                 adapter = new BookmarkAdapter(getContext(), cursor);
 
@@ -69,7 +82,7 @@ public class BookmarkFragment extends Fragment {
                 // Hide ProgressBar after data is loaded
                 binding.progressBar.setVisibility(View.GONE);
             });
-        }).start();
+        });
     }
 
     @Override
@@ -87,13 +100,28 @@ public class BookmarkFragment extends Fragment {
     // Method to refresh adapter after data is saved
     public void refreshData() {
         binding.progressBar.setVisibility(View.VISIBLE);
-        new Thread(() -> {
+
+        executorService.execute(() -> {
+            // Fetch updated bookmarks from the database
             Cursor cursor = bookmarkHelper.getAllBookmarks();
-            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); } // 1 second delay
-            new Handler(getActivity().getMainLooper()).post(() -> {
+
+            // Add artificial delay (optional)
+            try { Thread.sleep(1000); } catch (InterruptedException e) { e.printStackTrace(); }
+
+            // Update UI on the main thread
+            handler.post(() -> {
                 adapter.swapCursor(cursor);
                 binding.progressBar.setVisibility(View.GONE);
             });
-        }).start();
+        });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (bookmarkHelper != null) {
+            bookmarkHelper.close();
+        }
+        executorService.shutdownNow(); // Shut down the executor when fragment is destroyed
     }
 }

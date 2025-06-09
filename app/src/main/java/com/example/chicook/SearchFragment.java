@@ -1,8 +1,11 @@
 package com.example.chicook;
 
+import static android.os.Looper.getMainLooper;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,8 +30,11 @@ import com.example.chicook.model.search.SearchHistoryAdapter;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SearchFragment extends Fragment {
 
@@ -46,10 +52,18 @@ public class SearchFragment extends Fragment {
     private ArrayList<String> searchHistory = new ArrayList<>();
     private SearchHistoryAdapter searchHistoryAdapter;
 
+    private ExecutorService executorService;
+    private Handler handler;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ThemeHelper.applyTheme(requireContext());
         binding = FragmentSearchBinding.inflate(inflater, container, false);
         View view = binding.getRoot();
+
+        // Initialize ExecutorService and Handler
+        executorService = Executors.newSingleThreadExecutor();
+        handler = new Handler(getMainLooper()); // Handler to update UI on main thread
 
         // Setup SharedPreferences
         sharedPreferences = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
@@ -109,24 +123,29 @@ public class SearchFragment extends Fragment {
     }
 
     private void loadSearchHistory() {
-        String savedHistory = sharedPreferences.getString(PREF_SEARCH_HISTORY, "");
-        if (!savedHistory.isEmpty()) {
-            String[] historyArray = savedHistory.split(",");
-            for (String query : historyArray) {
-                searchHistory.add(query);
+        executorService.execute(() -> {
+            String savedHistory = sharedPreferences.getString(PREF_SEARCH_HISTORY, "");
+            if (!savedHistory.isEmpty()) {
+                String[] historyArray = savedHistory.split(",");
+                for (String query : historyArray) {
+                    searchHistory.add(query);
+                }
             }
-        }
+            handler.post(() -> searchHistoryAdapter.notifyDataSetChanged());
+        });
     }
 
     private void saveSearchQuery(String query) {
-        if (!searchHistory.contains(query)) {
-            searchHistory.add(0, query);  // Add latest query at the top
-        }
-        if (searchHistory.size() > 3) {
-            searchHistory.remove(searchHistory.size() - 1); // Limit to 3 items
-        }
-        sharedPreferences.edit().putString(PREF_SEARCH_HISTORY, String.join(",", searchHistory)).apply();
-        searchHistoryAdapter.notifyDataSetChanged();
+        executorService.execute(() -> {
+            if (!searchHistory.contains(query)) {
+                searchHistory.add(0, query);  // Add latest query at the top
+            }
+            if (searchHistory.size() > 3) {
+                searchHistory.remove(searchHistory.size() - 1); // Limit to 3 items
+            }
+            sharedPreferences.edit().putString(PREF_SEARCH_HISTORY, String.join(",", searchHistory)).apply();
+            handler.post(() -> searchHistoryAdapter.notifyDataSetChanged());
+        });
     }
 
     private void performSearch(String query) {
@@ -181,7 +200,7 @@ public class SearchFragment extends Fragment {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // Tampilkan ProgressBar sebelum mengambil data
+                // Show ProgressBar before fetching data
                 binding.progressBar.setVisibility(View.VISIBLE);
                 handleSpinnerSelection();
             }
@@ -197,14 +216,14 @@ public class SearchFragment extends Fragment {
         boolean isAreaSelected = binding.spinnerArea.getSelectedItemPosition() > 0;
         boolean isIngredientSelected = binding.spinnerIngredient.getSelectedItemPosition() > 0;
 
-        // Cek filter lebih dari satu
+        // Check if multiple filters are selected
         if ((isCategorySelected && isAreaSelected) || (isCategorySelected && isIngredientSelected) || (isAreaSelected && isIngredientSelected)) {
             Toast.makeText(getContext(), "Please select only one filter at a time.", Toast.LENGTH_SHORT).show();
             resetSpinners(isCategorySelected, isAreaSelected, isIngredientSelected);
             return;
         }
 
-        // Menampilkan hasil berdasarkan filter
+        // Show results based on filter
         if (!isCategorySelected && !isAreaSelected && !isIngredientSelected) {
             showRandomMeals();
             getRandomMeal(7);
@@ -258,7 +277,7 @@ public class SearchFragment extends Fragment {
         call.enqueue(new Callback<MealResponse>() {
             @Override
             public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
-                binding.progressBar.setVisibility(View.GONE); // Tambahkan di sini
+                binding.progressBar.setVisibility(View.GONE); // Hide progress bar
                 if (response.isSuccessful() && response.body() != null && response.body().getMeals() != null) {
                     mealsList.clear();
                     mealsList.addAll(response.body().getMeals());
@@ -270,7 +289,7 @@ public class SearchFragment extends Fragment {
 
             @Override
             public void onFailure(Call<MealResponse> call, Throwable t) {
-                binding.progressBar.setVisibility(View.GONE); // Pastikan juga di sini
+                binding.progressBar.setVisibility(View.GONE); // Hide progress bar
                 Toast.makeText(getContext(), "Error fetching data", Toast.LENGTH_SHORT).show();
             }
         });
@@ -281,7 +300,7 @@ public class SearchFragment extends Fragment {
         randomMealsList.clear();
         randomMealAdapter.notifyDataSetChanged();
 
-        // Tampilkan ProgressBar saat mulai mengambil data
+        // Show ProgressBar when fetching data
         binding.progressBar.setVisibility(View.VISIBLE);
 
         final int[] loadedCount = {0};
@@ -298,7 +317,7 @@ public class SearchFragment extends Fragment {
                         randomMealAdapter.notifyDataSetChanged();
                         binding.randomSearchRecycler.setVisibility(View.VISIBLE);
 
-                        // Sembunyikan ProgressBar setelah selesai mengambil data
+                        // Hide ProgressBar after data is fetched
                         binding.progressBar.setVisibility(View.GONE);
                     }
                 }
@@ -310,7 +329,7 @@ public class SearchFragment extends Fragment {
                         randomMealAdapter.notifyDataSetChanged();
                         binding.randomSearchRecycler.setVisibility(View.VISIBLE);
 
-                        // Sembunyikan ProgressBar jika gagal
+                        // Hide ProgressBar if failed
                         binding.progressBar.setVisibility(View.GONE);
                     }
                 }

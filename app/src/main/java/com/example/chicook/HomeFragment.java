@@ -1,13 +1,13 @@
 package com.example.chicook;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 
@@ -26,6 +26,8 @@ import com.example.chicook.model.randomMeals.RandomMealResponse;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,9 +39,9 @@ public class HomeFragment extends Fragment {
     private CategoryAdapter categoryAdapter;
     private RandomMealAdapter randomMealAdapter;
     private FragmentHomeBinding binding;
-    private Handler handler = new Handler();
-    private int currentMealIndex = 0;
+    private ExecutorService executorService;
     private List<RandomMeal> randomMealsList = new ArrayList<>();
+
     private List<String> selectedCategories = new ArrayList<String>() {{
         add("Beef");
         add("Chicken");
@@ -48,8 +50,14 @@ public class HomeFragment extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ThemeHelper.applyTheme(requireContext());
         // Inflate the layout for this fragment using ViewBinding
         binding = FragmentHomeBinding.inflate(inflater, container, false);
+
+        // Pastikan binding selesai sebelum memulai proses lainnya
+        if (binding == null) {
+            return null;  // Menghindari NullPointerException
+        }
 
         // Tampilkan ProgressBar saat memuat data
         binding.progressBar.setVisibility(View.VISIBLE);  // Menampilkan ProgressBar saat halaman pertama kali dibuka
@@ -66,17 +74,26 @@ public class HomeFragment extends Fragment {
 
         ApiService apiService = ApiConfig.getCLient().create(ApiService.class);
 
+        // Inisialisasi ExecutorService
+        executorService = Executors.newSingleThreadExecutor();
+
         // Memanggil API randomMeals() tiga kali untuk mendapatkan 3 resep acak
         fetchRandomMeals(apiService);
 
-        // Menggunakan Handler untuk menjalankan pemanggilan random meal setiap 5 detik
-        handler.postDelayed(new Runnable() {
+        // Menggunakan ExecutorService untuk menjalankan pemanggilan random meal setiap 5 detik
+        executorService.execute(new Runnable() {
             @Override
             public void run() {
-                fetchRandomMeals(apiService);
-                handler.postDelayed(this, 5000); // Mengulang setiap 5 detik
+                try {
+                    while (true) {
+                        fetchRandomMeals(apiService);
+                        Thread.sleep(5000); // Mengulang setiap 5 detik
+                    }
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-        }, 3000);
+        });
 
         // Memanggil API untuk mendapatkan kategori makanan
         fetchCategories(apiService);
@@ -84,7 +101,38 @@ public class HomeFragment extends Fragment {
         // Memanggil API untuk mencari makanan berdasarkan nama (misalnya "Chicken")
         fetchMeals(apiService);
 
+        // Aksi klik ImageView untuk toggle tema
+        binding.imgToggleTheme.setOnClickListener(v -> {
+            String currentTheme = ThemeHelper.getCurrentTheme(requireContext());
+
+            if ("dark".equals(currentTheme)) {
+                ThemeHelper.setTheme(requireContext(), "light");
+            } else {
+                ThemeHelper.setTheme(requireContext(), "dark");
+            }
+
+            // Ubah tema tanpa memanggil recreate() untuk mencegah keluar
+            AppCompatDelegate.setDefaultNightMode(
+                    "dark".equals(currentTheme)
+                            ? AppCompatDelegate.MODE_NIGHT_NO
+                            : AppCompatDelegate.MODE_NIGHT_YES
+            );
+
+            // Hanya update gambar tema setelah perubahan
+            updateImageTheme();
+        });
+
         return rootView;
+    }
+
+    // Memperbarui gambar tema saat ganti tema
+    private void updateImageTheme() {
+        String currentTheme = ThemeHelper.getCurrentTheme(requireContext());
+        if ("dark".equals(currentTheme)) {
+            binding.imgToggleTheme.setImageResource(R.drawable.ic_light_mode);
+        } else {
+            binding.imgToggleTheme.setImageResource(R.drawable.ic_dark_mode);
+        }
     }
 
     // Fungsi untuk menyembunyikan ProgressBar dan menampilkan elemen lainnya setelah selesai
@@ -103,23 +151,24 @@ public class HomeFragment extends Fragment {
         call.enqueue(new Callback<RandomMealResponse>() {
             @Override
             public void onResponse(Call<RandomMealResponse> call, Response<RandomMealResponse> response) {
+                if (binding == null) return; // Prevent crash if view is destroyed
                 if (response.isSuccessful() && response.body() != null) {
                     RandomMeal meal = response.body().getMeals().get(0);
                     randomMealsList.add(meal);
 
-                    // Menampilkan meal berikutnya setiap 5 detik
                     if (randomMealsList.size() > 5) {
                         randomMealsList.remove(0);
                     }
 
-                    // Update adapter dan tampilkan resep acak
-                    randomMealAdapter = new RandomMealAdapter(randomMealsList, getContext());
-                    binding.carouselRecycler.setAdapter(randomMealAdapter);
+                    if (randomMealAdapter == null) {
+                        randomMealAdapter = new RandomMealAdapter(randomMealsList, getContext());
+                        binding.carouselRecycler.setAdapter(randomMealAdapter);
+                    } else {
+                        randomMealAdapter.notifyDataSetChanged();
+                    }
                 } else {
                     Toast.makeText(getContext(), "No meals found", Toast.LENGTH_SHORT).show();
                 }
-
-                // Sembunyikan ProgressBar dan TextView setelah API selesai
                 hideProgressBarIfFinished();
             }
 
@@ -136,25 +185,20 @@ public class HomeFragment extends Fragment {
         callCategory.enqueue(new Callback<CategoryResponse>() {
             @Override
             public void onResponse(Call<CategoryResponse> call, Response<CategoryResponse> response) {
+                if (binding == null) return; // Prevent crash if view is destroyed
                 if (response.isSuccessful() && response.body() != null) {
                     List<Category> allCategories = response.body().getCategories();
-
-                    // Memfilter kategori yang ingin ditampilkan berdasarkan daftar selectedCategories
                     List<Category> filteredCategories = new ArrayList<>();
                     for (Category category : allCategories) {
                         if (selectedCategories.contains(category.getStrCategory())) {
                             filteredCategories.add(category);
                         }
                     }
-
-                    // Menampilkan kategori yang telah difilter
                     categoryAdapter = new CategoryAdapter(filteredCategories, getContext());
                     binding.topCategoryRecycler.setAdapter(categoryAdapter);
                 } else {
                     Toast.makeText(getContext(), "No categories found", Toast.LENGTH_SHORT).show();
                 }
-
-                // Sembunyikan ProgressBar dan TextView setelah API selesai
                 hideProgressBarIfFinished();
             }
 
@@ -171,14 +215,13 @@ public class HomeFragment extends Fragment {
         callMeal.enqueue(new Callback<MealResponse>() {
             @Override
             public void onResponse(Call<MealResponse> call, Response<MealResponse> response) {
+                if (binding == null) return; // Prevent crash if view is destroyed
                 if (response.isSuccessful() && response.body() != null) {
                     mealAdapter = new MealAdapter(response.body().getMeals(), getContext());
                     binding.recommendationRecycler.setAdapter(mealAdapter);
                 } else {
                     Toast.makeText(getContext(), "No meals found", Toast.LENGTH_SHORT).show();
                 }
-
-                // Sembunyikan ProgressBar dan TextView setelah API selesai
                 hideProgressBarIfFinished();
             }
 
@@ -194,6 +237,6 @@ public class HomeFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         binding = null;  // Hapus binding saat view dihancurkan untuk mencegah memory leak
-        handler.removeCallbacksAndMessages(null);
+        executorService.shutdownNow(); // Matikan executor saat fragment dihancurkan
     }
 }
