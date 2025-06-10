@@ -2,9 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="utama">#FEB800</color>
+    <color name="utama">#328E6E</color>
     <color name="light">#FAFAFA</color>
-    <color name="dark">#131313</color>
+    <color name="dark">#07060C</color>
     <color name="icon_on">#FEB800</color>
     <color name="text_on">#757575</color>
     <color name="bottom_off">#999898</color>

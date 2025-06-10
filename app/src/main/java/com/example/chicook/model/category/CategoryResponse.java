@@ -8,7 +8,6 @@ public class CategoryResponse {
     @SerializedName("categories")
     private List<Category> categories;
 
-    // Getter
     public List<Category> getCategories() {
         return categories;
     }

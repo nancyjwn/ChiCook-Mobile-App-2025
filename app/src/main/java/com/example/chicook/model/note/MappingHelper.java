@@ -2,7 +2,7 @@ package com.example.chicook.model.note;
 
 import android.database.Cursor;
 
-import com.example.chicook.data.sqlite.DatabaseContract;
+import com.example.chicook.data.database.DatabaseContract;
 
 import java.util.ArrayList;
 

@@ -1,43 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="?android:attr/windowBackground">
+    android:background="?android:attr/windowBackground"
+    tools:context=".layout.activity.MainActivity">
 
-    <!-- ViewPager2 untuk onboarding pages -->
-    <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/viewPager"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1">
 
-    <!-- Layout untuk tombol Next, Back, Continue -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:padding="16dp">
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/viewPager"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-        <Button
-            android:id="@+id/btnBack"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Back"
-            android:visibility="gone" /> <!-- Hidden initially -->
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:padding="16dp"
+            android:layout_gravity="bottom">
 
-        <Button
-            android:id="@+id/btnNext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Next" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Back"
+                android:visibility="gone"
+                app:backgroundTint="#328E6E"
+                app:iconTint="@color/white"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/white"
+                android:layout_marginEnd="12dp" />
 
-        <Button
-            android:id="@+id/btnContinue"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Continue"
-            android:visibility="gone" /> <!-- Hidden initially -->
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Next"
+                android:fontFamily="@font/poppinsregular"
+                app:backgroundTint="#328E6E"
+                android:textColor="@color/white"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnContinue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppinsregular"
+                android:text="Continue"
+                android:visibility="gone"
+                app:backgroundTint="#328E6E"
+                android:textColor="@color/white"
+                android:layout_marginStart="12dp" />
+        </LinearLayout>
+    </FrameLayout>
 </LinearLayout>

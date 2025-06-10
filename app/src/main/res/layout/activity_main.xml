@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="?android:attr/windowBackground"
-    tools:context=".MainActivity">
+    tools:context=".layout.activity.MainActivity">
 
     <FrameLayout
         android:id="@+id/fragment_container"
@@ -21,11 +21,6 @@
         android:layout_alignParentBottom="true"
         android:orientation="vertical">
 
-<!--        <View-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="0.5dp"-->
-<!--            android:background="#333333" />-->
-
         <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
             style="@style/NoRippleStyle"
@@ -34,7 +29,6 @@
             android:background="?android:attr/windowBackground"
             app:itemIconTint="@color/utama"
             app:itemTextColor="@color/utama"
-            app:labelVisibilityMode="labeled"
             app:menu="@menu/bottom_navigation" />
     </LinearLayout>
 </RelativeLayout>

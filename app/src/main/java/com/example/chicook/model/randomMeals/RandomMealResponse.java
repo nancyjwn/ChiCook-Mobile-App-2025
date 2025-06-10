@@ -8,7 +8,6 @@ public class RandomMealResponse {
     @SerializedName("meals")
     private List<RandomMeal> meals;
 
-    // Getter dan Setter
     public List<RandomMeal> getMeals() {
         return meals;
     }

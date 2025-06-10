@@ -1,114 +1,335 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="?android:attr/windowBackground"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context=".SearchFragment">
+    android:layout_height="match_parent">
 
-    <!-- Search View -->
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/search"
+    <LinearLayout
+        android:id="@+id/semuauiSearch"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:paddingStart="20dp"
-        android:paddingEnd="8dp"
-        android:layout_gravity="center"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="?android:attr/windowBackground"
+        tools:context=".layout.fragment.SearchFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/searchHistoryRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        android:layout_marginTop="2dp"
-        android:layout_marginBottom="2dp"
-        android:paddingStart="2dp"
-        android:paddingEnd="2dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:clipToPadding="false"/>
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="14dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            android:background="?android:attr/windowBackground">
 
-    <!-- Category Filter -->
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:scrollbars="none"
-        app:layout_constraintTop_toBottomOf="@id/search">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="Search for Food Recipies"
+                        android:textColor="@color/utama"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:fontFamily="@font/poppinssemibold" />
+                </LinearLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    android:background="?android:attr/windowBackground">
+
+                    <androidx.appcompat.widget.SearchView
+                        android:id="@+id/search"
+                        android:layout_width="match_parent"
+                        android:layout_height="20dp"
+                        android:layout_margin="4dp"
+                        app:iconifiedByDefault="false"
+                        app:queryHint="Enter A Recipe Name"
+                        app:searchIcon="@drawable/search"
+                        android:background="@android:color/transparent" />
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="8dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            android:background="?android:attr/windowBackground">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/searchHistoryRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:padding="8dp"
+                android:clipToPadding="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                android:nestedScrollingEnabled="false" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/filterCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="6dp"
+            android:background="?android:attr/windowBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/filter"
+                        android:contentDescription="Filter Icon" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Search Filter"
+                        android:textColor="@color/utama"
+                        android:textSize="16sp"
+                        android:fontFamily="@font/poppinssemibold"/>
+                </LinearLayout>
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none"
+                    android:clipToPadding="false"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="4dp">
+
+                    <LinearLayout
+                        android:id="@+id/genre_buttons"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical">
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="12dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="3dp"
+                            app:cardBackgroundColor="#E3F2FD">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:padding="8dp">
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/menu"
+                                    android:tint="#60B5FF"
+                                    android:layout_marginEnd="6dp"
+                                    android:contentDescription="Category" />
+
+                                <Spinner
+                                    android:id="@+id/spinnerCategory"
+                                    android:layout_width="120dp"
+                                    android:layout_height="36dp"
+                                    android:dropDownHeight="240dp"
+                                    android:overScrollMode="always"
+                                    android:background="@android:color/transparent"/>
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="12dp"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="3dp"
+                            app:cardBackgroundColor="#E8F5E8">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:padding="8dp">
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/citizenship"
+                                    android:layout_marginEnd="6dp"
+                                    android:contentDescription="Area" />
+
+                                <Spinner
+                                    android:id="@+id/spinnerArea"
+                                    android:layout_width="120dp"
+                                    android:layout_height="36dp"
+                                    android:dropDownHeight="240dp"
+                                    android:overScrollMode="always"
+                                    android:background="@android:color/transparent" />
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:cardCornerRadius="12dp"
+                            app:cardElevation="3dp"
+                            app:cardBackgroundColor="#FFF3E0">
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:gravity="center_vertical"
+                                android:padding="8dp">
+
+                                <ImageView
+                                    android:layout_width="16dp"
+                                    android:layout_height="16dp"
+                                    android:src="@drawable/ingredient"
+                                    android:tint="#FF9800"
+                                    android:layout_marginEnd="6dp"
+                                    android:contentDescription="Ingredient" />
+
+                                <Spinner
+                                    android:id="@+id/spinnerIngredient"
+                                    android:layout_width="120dp"
+                                    android:layout_height="36dp"
+                                    android:dropDownHeight="240dp"
+                                    android:overScrollMode="always"
+                                    android:background="@android:color/transparent" />
+                            </LinearLayout>
+                        </androidx.cardview.widget.CardView>
+                    </LinearLayout>
+                </HorizontalScrollView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
         <LinearLayout
-            android:id="@+id/genre_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginBottom="8dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/randomSearchRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="481dp"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/carousel_item" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="16dp">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/searchRecycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingBottom="16dp"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/resep_item" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/offlineMessage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/nonetwork" />
+
+        <TextView
+            android:id="@+id/noConnectionText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
+            android:text="No internet connection"
+            android:fontFamily="@font/poppinslight"
+            android:textColor="#FF0000"
+            android:textSize="18sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/refreshButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Try Again"
+            android:fontFamily="@font/poppinsregular"
+            android:backgroundTint="@color/utama"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            app:iconPadding="8dp"
+            app:cornerRadius="18dp"
+            app:iconTint="@android:color/white"
+            app:rippleColor="@color/white"
+            app:iconGravity="textStart"
             android:paddingStart="16dp"
-            android:paddingEnd="16dp">
-
-            <!-- Spinner untuk Category -->
-            <Spinner
-                android:id="@+id/spinnerCategory"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:dropDownHeight="240dp"
-                android:overScrollMode="always"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp" />
-
-            <!-- Spinner untuk Area -->
-            <Spinner
-                android:id="@+id/spinnerArea"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:dropDownHeight="240dp"
-                android:overScrollMode="always"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp"/>
-
-            <!-- Spinner untuk Ingredient -->
-            <Spinner
-                android:id="@+id/spinnerIngredient"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:dropDownHeight="240dp"
-                android:overScrollMode="always"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="8dp" />
-
-        </LinearLayout>
-    </HorizontalScrollView>
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:indeterminateTint="@color/utama"
         android:visibility="gone" />
-
-    <!-- RecyclerView for Random Meals -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/randomSearchRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="630dp"
-        android:layout_marginBottom="5dp"
-        android:clipToPadding="false"
-        android:orientation="horizontal"
-        android:paddingStart="4dp"
-        android:paddingEnd="4dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:spanCount="2"
-        tools:listitem="@layout/carousel_item" />
-
-    <!-- RecyclerView for Search Results -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/searchRecycler"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="16dp"
-        android:paddingBottom="45dp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:spanCount="2"
-        tools:listitem="@layout/resep_item" />
-
-</LinearLayout>
+</FrameLayout>

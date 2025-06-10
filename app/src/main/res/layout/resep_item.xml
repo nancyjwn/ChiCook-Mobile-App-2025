@@ -28,7 +28,7 @@
             android:text="Nama Resep"
             android:textColor="@color/utama"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/poppinssemibold"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,11 +36,11 @@
 
             <ImageView
                 android:id="@+id/recipeCategoryIcon"
-                android:layout_width="35px"
-                android:layout_height="35px"
-                android:layout_marginTop="2dp"
+                android:layout_width="32px"
+                android:layout_height="32px"
                 android:layout_marginStart="8dp"
-                android:src="@drawable/menu"/>
+                android:layout_marginTop="2dp"
+                android:src="@drawable/menu" />
 
             <TextView
                 android:id="@+id/recipeCategory"
@@ -52,12 +52,13 @@
                 android:paddingRight="8dp"
                 android:text="Kategori Resep"
                 android:textColor="#888888"
-                android:textSize="12sp" />
+                android:textSize="10sp"
+                android:fontFamily="@font/poppinsregular"/>
 
             <ImageView
                 android:id="@+id/recipeAreaIcon"
-                android:layout_width="37px"
-                android:layout_height="37px"
+                android:layout_width="34px"
+                android:layout_height="34px"
                 android:layout_marginTop="2dp"
                 android:src="@drawable/citizenship"/>
 
@@ -71,7 +72,8 @@
                 android:paddingRight="8dp"
                 android:text="Negara Resep"
                 android:textColor="#888888"
-                android:textSize="12sp" />
+                android:textSize="10sp"
+                android:fontFamily="@font/poppinsregular"/>
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

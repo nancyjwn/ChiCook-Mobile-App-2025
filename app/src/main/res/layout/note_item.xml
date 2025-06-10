@@ -17,7 +17,7 @@
             android:id="@+id/tv_item_timestamp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/poppinslight"
             android:text="12 Mei 2025, 15:30"
             android:textSize="14sp" />
 
@@ -25,27 +25,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:fontFamily="monospace"
+            android:fontFamily="@font/poppinssemibold"
             android:text="JUDUL"
             android:textAllCaps="true"
             android:textColor="@color/utama"
             android:textSize="12sp" />
+
 
         <TextView
             android:id="@+id/tv_item_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/poppinsregular"
             android:text="Judul Note Contoh"
-            android:textColor="@color/white"
             android:textSize="18sp" />
-
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="monospace"
+            android:fontFamily="@font/poppinssemibold"
             android:text="DESC"
             android:textAllCaps="true"
             android:textColor="@color/utama"
@@ -55,9 +54,8 @@
             android:id="@+id/tv_item_nim"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif"
+            android:fontFamily="@font/poppinsregular"
             android:text="Ini adalah deskripsi singkat tentang note ini. Deskripsi dibuat agar mudah dibaca dan tidak terlalu panjang."
-            android:textColor="@color/white"
             android:textSize="14sp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

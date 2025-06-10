@@ -11,9 +11,9 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.chicook.DetailMealActivity;
-import com.example.chicook.data.sqlite.BookmarkHelper;
-import com.example.chicook.databinding.ResepItemBinding; // Gunakan ResepItemBinding untuk item
+import com.example.chicook.layout.activity.DetailMealActivity;
+import com.example.chicook.data.database.BookmarkHelper;
+import com.example.chicook.databinding.ResepItemBinding;
 import com.squareup.picasso.Picasso;
 
 public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.BookmarkViewHolder> {
@@ -26,13 +26,12 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
     public BookmarkAdapter(Context context, Cursor cursor) {
         this.context = context;
         this.cursor = cursor;
-        this.bookmarkHelper = new BookmarkHelper(context); // Inisialisasi BookmarkHelper
+        this.bookmarkHelper = new BookmarkHelper(context);
     }
 
     @NonNull
     @Override
     public BookmarkViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Inflate layout resep_item.xml menggunakan ViewBinding
         ResepItemBinding binding = ResepItemBinding.inflate(LayoutInflater.from(context), parent, false);
         return new BookmarkViewHolder(binding);
     }
@@ -59,32 +58,28 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
 
             // Menangani kategori dan area kosong atau null
             if (category == null || category.isEmpty()) {
-                holder.binding.recipeCategory.setVisibility(View.GONE);  // Sembunyikan kategori
-                holder.binding.recipeCategoryIcon.setVisibility(View.GONE);  // Sembunyikan ikon kategori
+                holder.binding.recipeCategory.setVisibility(View.GONE);
+                holder.binding.recipeCategoryIcon.setVisibility(View.GONE);
             } else {
-                holder.binding.recipeCategory.setVisibility(View.VISIBLE);  // Tampilkan kategori
-                holder.binding.recipeCategoryIcon.setVisibility(View.VISIBLE);  // Tampilkan ikon kategori
-                holder.binding.recipeCategory.setText(category);  // Menampilkan kategori
+                holder.binding.recipeCategory.setVisibility(View.VISIBLE);
+                holder.binding.recipeCategoryIcon.setVisibility(View.VISIBLE);
+                holder.binding.recipeCategory.setText(category);
             }
-
             if (area == null || area.isEmpty()) {
-                holder.binding.recipeArea.setVisibility(View.GONE);  // Sembunyikan area
-                holder.binding.recipeAreaIcon.setVisibility(View.GONE);  // Sembunyikan ikon area
+                holder.binding.recipeArea.setVisibility(View.GONE);
+                holder.binding.recipeAreaIcon.setVisibility(View.GONE);
             } else {
-                holder.binding.recipeArea.setVisibility(View.VISIBLE);  // Tampilkan area
-                holder.binding.recipeAreaIcon.setVisibility(View.VISIBLE);  // Tampilkan ikon area
-                holder.binding.recipeArea.setText(area);  // Menampilkan area
+                holder.binding.recipeArea.setVisibility(View.VISIBLE);
+                holder.binding.recipeAreaIcon.setVisibility(View.VISIBLE);
+                holder.binding.recipeArea.setText(area);
             }
 
-            // Set data ke views menggunakan binding
             holder.binding.recipeTitle.setText(title);
             holder.binding.recipeCategory.setText(category);
             holder.binding.recipeArea.setText(area);
             Picasso.get().load(imageUrl).into(holder.binding.recipeImage);
 
-            // Set listener on item click
             holder.itemView.setOnClickListener(v -> {
-                // Mengirim data ke DetailMealActivity
                 Intent intent = new Intent(context, DetailMealActivity.class);
                 intent.putExtra("mealId", mealId);
                 intent.putExtra("title", title);
@@ -105,20 +100,18 @@ public class BookmarkAdapter extends RecyclerView.Adapter<BookmarkAdapter.Bookma
         return cursor.getCount();
     }
 
-    // Method untuk mengupdate cursor
     public void swapCursor(Cursor newCursor) {
         if (cursor != null) {
-            cursor.close();  // Pastikan cursor lama ditutup
+            cursor.close();
         }
         cursor = newCursor;
         if (newCursor != null) {
-            notifyDataSetChanged();  // Memberitahu adapter bahwa data telah diperbarui
+            notifyDataSetChanged();
         }
     }
 
     public static class BookmarkViewHolder extends RecyclerView.ViewHolder {
         ResepItemBinding binding;
-
         public BookmarkViewHolder(ResepItemBinding binding) {
             super(binding.getRoot());
             this.binding = binding;

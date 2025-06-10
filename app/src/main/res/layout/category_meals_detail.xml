@@ -6,7 +6,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="?android:attr/windowBackground">
 
-    <!-- Header Card with Back Button -->
     <androidx.cardview.widget.CardView
         android:id="@+id/headerCard"
         android:layout_width="match_parent"
@@ -14,7 +13,7 @@
         android:layout_alignParentTop="true"
         app:cardCornerRadius="0dp"
         app:cardElevation="8dp"
-        android:backgroundTint="@color/white">
+        android:backgroundTint="@color/utama">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,7 +43,6 @@
 
             </androidx.cardview.widget.CardView>
 
-            <!-- Category Title with Enhanced Style -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -56,7 +54,7 @@
                     android:layout_height="wrap_content"
                     android:text="Category"
                     android:textSize="12sp"
-                    android:textColor="#7F8C8D"
+                    android:textColor="@color/white"
                     android:textStyle="normal"
                     android:layout_marginBottom="2dp"/>
 
@@ -67,15 +65,11 @@
                     android:text="Category Name"
                     android:textSize="24sp"
                     android:textStyle="bold"
-                    android:textColor="#2C3E50"/>
-
+                    android:textColor="@color/white"/>
             </LinearLayout>
-
         </LinearLayout>
-
     </androidx.cardview.widget.CardView>
 
-    <!-- Main Content Container -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -83,7 +77,6 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Subtitle Section -->
         <LinearLayout
             android:id="@+id/subtitleSection"
             android:layout_width="match_parent"
@@ -95,7 +88,7 @@
             <View
                 android:layout_width="4dp"
                 android:layout_height="24dp"
-                android:background="#204C3B"
+                android:background="#328E6E"
                 android:layout_marginRight="12dp"/>
 
             <TextView
@@ -104,18 +97,9 @@
                 android:layout_weight="1"
                 android:text="Explore Delicious Recipes"
                 android:textSize="16sp"
-                android:textColor="#34495E"
+                android:textColor="#888888"
                 android:textStyle="normal"/>
-
         </LinearLayout>
-
-        <ProgressBar
-            android:id="@+id/progressBar"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:visibility="gone" />
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/categoryMealsRecycler"
             android:layout_width="match_parent"
@@ -127,4 +111,59 @@
             app:spanCount="2"
             tools:listitem="@layout/resep_item" />
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/offlineMessage"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        android:padding="16dp">
+
+        <ImageView
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/nonetwork" />
+
+        <TextView
+            android:id="@+id/noConnectionText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No internet connection"
+            android:fontFamily="@font/poppinslight"
+            android:textColor="#FF0000"
+            android:textSize="18sp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/refreshButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Try Again"
+            android:fontFamily="@font/poppinsregular"
+            android:backgroundTint="@color/utama"
+            android:textColor="@android:color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            app:iconPadding="8dp"
+            app:cornerRadius="18dp"
+            app:iconTint="@android:color/white"
+            app:rippleColor="@color/white"
+            app:iconGravity="textStart"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp" />
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:indeterminateTint="@color/utama"
+        android:visibility="gone" />
 </RelativeLayout>

@@ -7,11 +7,10 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.chicook.CategoryMealsActivity;
-import com.example.chicook.databinding.CategoryItemBinding;  // ViewBinding untuk kategori
+import com.example.chicook.layout.activity.CategoryMealsActivity;
+import com.example.chicook.databinding.CategoryItemBinding;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
@@ -26,7 +25,6 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     @Override
     public CategoryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        // Inflate layout untuk kategori menggunakan ViewBinding
         CategoryItemBinding binding = CategoryItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
         return new CategoryViewHolder(binding);
     }
@@ -34,16 +32,13 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
     @Override
     public void onBindViewHolder(CategoryViewHolder holder, int position) {
         Category category = categories.get(position);
-
-        // Bind data kategori ke dalam UI
         holder.binding.categoryName.setText(category.getStrCategory());
-        Picasso.get().load(category.getStrCategoryThumb()).into(holder.binding.categoryImage);  // Menampilkan gambar kategori
+        Picasso.get().load(category.getStrCategoryThumb()).into(holder.binding.categoryImage);
 
-        // Menambahkan click listener untuk item kategori
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, CategoryMealsActivity.class);
-            intent.putExtra("category", category.getStrCategory());  // Mengirim kategori yang dipilih
-            context.startActivity(intent);  // Menjalankan CategoryMealsActivity
+            intent.putExtra("category", category.getStrCategory());
+            context.startActivity(intent);
         });
     }
 

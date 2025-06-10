@@ -32,6 +32,6 @@
             android:text="Judul Resep"
             android:textColor="@color/white"
             android:textSize="16sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/poppinssemibold"/>
     </FrameLayout>
 </androidx.cardview.widget.CardView>

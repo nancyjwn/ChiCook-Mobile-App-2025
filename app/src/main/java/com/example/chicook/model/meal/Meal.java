@@ -55,7 +55,6 @@ public class Meal {
     @SerializedName("strIngredient9")
     private String ingredient9;
 
-    // Ukuran bahan-bahan
     @SerializedName("strMeasure1")
     private String measure1;
 
@@ -82,8 +81,6 @@ public class Meal {
 
     @SerializedName("strMeasure9")
     private String measure9;
-
-    // Getter dan Setter untuk setiap properti
 
     public String getIdMeal() {
         return idMeal;
@@ -294,12 +291,10 @@ public class Meal {
         this.measure9 = measure9;
     }
 
-    // Method to return ingredients as an array
     public String[] getIngredients() {
         return new String[]{ingredient1, ingredient2, ingredient3, ingredient4, ingredient5, ingredient6, ingredient7, ingredient8, ingredient9};
     }
 
-    // Method to return measures as an array
     public String[] getMeasures() {
         return new String[]{measure1, measure2, measure3, measure4, measure5, measure6, measure7, measure8, measure9};
     }

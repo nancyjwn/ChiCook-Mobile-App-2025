@@ -30,6 +30,6 @@
             android:text="Sarapan"
             android:textColor="@color/utama"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:fontFamily="@font/poppinssemibold"/>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

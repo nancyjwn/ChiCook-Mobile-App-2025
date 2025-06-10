@@ -16,7 +16,6 @@ public class Category {
     @SerializedName("strCategoryDescription")
     private String strCategoryDescription;
 
-    // Getter dan Setter
     public String getIdCategory() {
         return idCategory;
     }

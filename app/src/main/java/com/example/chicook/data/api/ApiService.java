@@ -16,7 +16,7 @@ public interface ApiService {
     Call<MealResponse> searchMealsByArea(@Query("a") String area);
 
     @GET("categories.php")
-    Call<CategoryResponse> categoryMeals(@Query("c") String categoryName);  // Update parameter query
+    Call<CategoryResponse> categoryMeals(@Query("c") String categoryName);
 
     @GET("random.php")
     Call<RandomMealResponse> randomMeals(@Query("") String randomMeal);
@@ -30,6 +30,4 @@ public interface ApiService {
     @GET("filter.php")
     Call<MealResponse> searchMealsByIngredient(@Query("i") String ingredient);
 
-    @GET("search.php")
-    Call<MealResponse> searchMealsByFirstLetter(@Query("f") String firstLetter);
 }

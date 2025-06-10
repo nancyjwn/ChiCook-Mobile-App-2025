@@ -2,18 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/home"
-        android:icon="@drawable/setting"
+        android:icon="@drawable/homeon"
         android:title="Home" />
     <item
         android:id="@+id/add_book"
-        android:icon="@drawable/setting"
+        android:icon="@drawable/searchoff"
         android:title="Search"/>
     <item
         android:id="@+id/community"
-        android:icon="@drawable/setting"
-        android:title="Community" />
+        android:icon="@drawable/notesoff"
+        android:title="Notes" />
     <item
         android:id="@+id/favorites"
-        android:icon="@drawable/setting"
-        android:title="Favorites" />
+        android:icon="@drawable/bookmark_off"
+        android:title="Bookmarks" />
 </menu>

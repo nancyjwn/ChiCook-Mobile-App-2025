@@ -1,59 +1,194 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:background="?android:attr/windowBackground"
-    android:layout_width="match_parent"
+<FrameLayout android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <!-- Search View -->
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/search"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="8dp">
 
-    <!-- Progress Bar -->
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="8dp"
+            app:cardUseCompatPadding="true"
+            android:background="?android:attr/windowBackground">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Data Search "
+                            android:textColor="@color/utama"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:fontFamily="@font/poppinssemibold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Find the data you're looking for"
+                            android:textColor="#666666"
+                            android:textSize="14sp"
+                            android:fontFamily="@font/poppinsregular"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="0dp"
+                    android:background="?android:attr/windowBackground">
+
+                    <androidx.appcompat.widget.SearchView
+                        android:id="@+id/search"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:layout_margin="4dp"
+                        app:iconifiedByDefault="false"
+                        app:queryHint="Data Search ..."
+                        app:searchIcon="@drawable/search"
+                        android:background="@android:color/transparent" />
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/listnoteCard"
+            android:layout_width="match_parent"
+            android:layout_height="550dp"
+            android:layout_weight="1"
+            android:background="?android:attr/windowBackground"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:contentDescription="List Icon"
+                        android:src="@drawable/menu" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="12dp"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/poppinssemibold"
+                        android:text="List Note"
+                        android:textColor="@color/utama"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#E0E0E0" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rv_students"
+                    android:layout_width="match_parent"
+                    android:layout_height="406dp"
+                    android:layout_weight="1"
+                    android:clipToPadding="false"
+                    android:fadeScrollbars="true"
+                    android:paddingHorizontal="8dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="80dp"
+                    android:scrollbarStyle="outsideOverlay"
+                    android:scrollbars="vertical" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/noDataCard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="150dp"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="40dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/noDataImage"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_marginBottom="16dp"
+                    android:contentDescription="No Data"
+                    android:src="@drawable/memo"
+                    app:tint="#BDBDBD" />
+
+                <TextView
+                    android:id="@+id/noData"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:text="Tidak Ada Data"
+                    android:textColor="#666666"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab_add"
+        android:layout_width="516dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:contentDescription="Add Data"
+        android:layout_margin="35dp"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        app:backgroundTint="@color/utama"
+        app:cornerRadius="28dp"
+        app:elevation="12dp"
+        app:icon="@drawable/add"
+        app:iconTint="#FFFFFF"
+        app:layout_behavior="@string/hide_bottom_view_on_scroll_behavior"
+        app:rippleColor="#40FFFFFF" />
+
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"
-        android:layout_marginTop="16dp"/>
-
-    <!-- RecyclerView for Notes -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_students"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:clipToPadding="false"
-        android:paddingBottom="80dp"
-        android:layout_marginTop="15dp" />
-
-    <!-- No Data TextView -->
-    <TextView
-        android:id="@+id/noData"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="No Data"
-        android:textSize="18sp"
-        android:visibility="gone"
-        android:layout_marginTop="16dp"/>
-
-    <!-- Floating Action Button -->
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fab_add"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:contentDescription="Add Book"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/utama"
-        android:layout_gravity="end|bottom"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="16dp"/>
-</LinearLayout>
+        android:indeterminateTint="@color/utama"
+        android:visibility="gone" />
+</FrameLayout>
